@@ -1,0 +1,3 @@
+class FakeDatabase:
+    games = {}
+    users = {}
