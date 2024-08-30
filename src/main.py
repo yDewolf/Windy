@@ -1,24 +1,28 @@
-import api.classes.fake_database as FakeDB
-import api.Login as ApiLogin
-import api.GameInteractions as ApiGameInteractions
+import utils.classes.fake_database as FakeDB
+import utils.Login as ApiLogin
+import utils.GameInteractions as ApiGameInteractions
+import utils.DataManager as DataManager
 
 using_database = FakeDB.FakeDatabase()
+using_database.games = DataManager.load_gamedata(using_database.gamedata_path)
+using_database.users = DataManager.load_userdata(using_database.userdata_path)
 
-test_games = [
-    {
-        "name": "Muck",
-        "description": "Muck is a cool game :) (pls buy)",
-        "price": 5.0,
-    },
-    {
-        "name": "Sekiro",
-        "description": "I like sekiro, sekiro has cool mechanics, give it a try",
-        "price": 100.0,
-    }
-]
 
-for game_info in test_games:
-    ApiGameInteractions.publish_game(game_info, using_database)
+#test_games = [
+#    {
+#        "name": "Muck",
+#        "description": "Muck is a cool game :) (pls buy)",
+#        "price": 5.0,
+#    },
+#    {
+#        "name": "Sekiro",
+#        "description": "I like sekiro, sekiro has cool mechanics, give it a try",
+#        "price": 100.0,
+#    }
+#]
+
+#for game_info in test_games:
+#    ApiGameInteractions.publish_game(game_info, using_database)
 
 user_data = {}
 
@@ -50,7 +54,7 @@ while True:
             for game_id in game_ids:
                 games_by_idx.append(game_id)
                 game_info = ApiGameInteractions.get_game_info(game_id, using_database)
-                print(f"\nGame name: {game_info["name"]}\nID: {game_info["id"]}\nPrice: {game_info["price"]}")
+                print(f"\nGame name: {game_info["name"]}\nID: {game_id}\nPrice: {game_info["price"]}")
             
             for i in range(len(games_by_idx)):
                 game_info = ApiGameInteractions.get_game_info(games_by_idx[i], using_database)

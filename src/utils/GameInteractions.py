@@ -1,6 +1,6 @@
 import random
 #import api.classes.fake_database as FakeDB
-from api.classes.fake_database import FakeDatabase
+from utils.classes.fake_database import FakeDatabase
 
 def purchase_game(game_id: int, user_data: dict, fake_database: FakeDatabase):
     if user_data["library"].has(game_id):
