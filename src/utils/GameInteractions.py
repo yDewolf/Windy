@@ -1,6 +1,7 @@
 import random
 from utils.classes.DataHolder import DataHolder
 
+# Inserts a new game to the user data / csv
 def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     if user_data["library"].has(game_id):
         print("WARNING: Game is already purchased")
@@ -9,6 +10,7 @@ def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     user_data["library"].append(game_id)
     data_holder.users_data[user_data["id"]]["library"].append(game_id)
 
+# Inserts a new game on the games data / csv
 def publish_game(game_info: dict, data_holder: DataHolder):
     # Add new game to the database
     game_id = random.randrange(0, 65535)
@@ -16,7 +18,7 @@ def publish_game(game_info: dict, data_holder: DataHolder):
 
     data_holder.games_data[game_id] = game_info
 
-
+# Returns all games listed on the DataHolder
 def get_games(data_holder: DataHolder) -> list:
     # Get all games in the database
     if len(data_holder.games_data) <= 0:
@@ -28,6 +30,7 @@ def get_games(data_holder: DataHolder) -> list:
     
     return games
 
+# Returns the selected game info using game_id
 def get_game_info(game_id: int, data_holder: DataHolder) -> dict:
     # Get game info from database using id
 

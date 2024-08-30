@@ -1,6 +1,5 @@
 import utils.Login as ApiLogin
 import utils.GameInteractions as ApiGameInteractions
-#import utils.DataManager as DataManager
 
 import utils.classes.Session as Session
 from utils.classes.DataHolder import DataHolder

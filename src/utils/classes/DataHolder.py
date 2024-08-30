@@ -1,4 +1,4 @@
-from utils.DataManager import load_data
+from utils.DataManager import load_csv
 
 class DataHolder:
     gamedata_path: str
@@ -16,7 +16,7 @@ class DataHolder:
 
 
 def load_userdata(data_path: str, debug=True) -> dict:
-    users_data = load_data(data_path)
+    users_data = load_csv(data_path)
     userdata = {}
 
 
@@ -33,7 +33,7 @@ def load_userdata(data_path: str, debug=True) -> dict:
     return userdata
 
 def load_gamedata(data_path: str, debug=True) -> dict:
-    games_data = load_data(data_path)
+    games_data = load_csv(data_path)
     gamedata = {}
 
     for data in games_data:
