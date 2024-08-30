@@ -46,41 +46,6 @@ def load_data(data_path: str):
     return values
 
 
-
-def load_userdata(data_path: str, debug=True) -> dict:
-    users_data = load_data(data_path)
-    userdata = {}
-
-
-    for data in users_data:
-        if debug:
-            print(f"\nParsing data: {data}\nCurrent userdata: {userdata}\n")
-        userdata[int(data["id"])] = {
-            "username": data["username"],
-            "password": data["password"],
-            "email": data["email"],
-            "library": data["library"]
-        }
-
-    return userdata
-
-def load_gamedata(data_path: str, debug=True) -> dict:
-    games_data = load_data(data_path)
-    gamedata = {}
-
-    for data in games_data:
-        if debug:
-            print(f"\nParsing data: {data}\nCurrent gamedata: {gamedata}\n")
-
-        gamedata[int(data["id"])] = {
-            "name": data["name"],
-            "description": data["description"],
-            "price": data["price"]
-        }
-    
-    return gamedata
-
-
 def dict_to_csv(data_dict: dict, header: list[str]=[]) -> str:
     lines = []
     csv_text = ""

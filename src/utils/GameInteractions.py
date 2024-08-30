@@ -1,44 +1,34 @@
 import random
-#import api.classes.fake_database as FakeDB
-from utils.classes.fake_database import FakeDatabase
+from utils.classes.DataHolder import DataHolder
 
-def purchase_game(game_id: int, user_data: dict, fake_database: FakeDatabase):
+def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     if user_data["library"].has(game_id):
         print("WARNING: Game is already purchased")
         return -1
 
     user_data["library"].append(game_id)
-    fake_database.users[user_data["id"]]["library"].append(game_id)
+    data_holder.users_data[user_data["id"]]["library"].append(game_id)
 
-def publish_game(game_info: dict, fake_database: FakeDatabase):
+def publish_game(game_info: dict, data_holder: DataHolder):
     # Add new game to the database
     game_id = random.randrange(0, 65535)
     game_info["id"] = game_id
 
-    fake_database.games[game_id] = game_info
+    data_holder.games_data[game_id] = game_info
 
 
-def get_games(fake_database: FakeDatabase) -> list:
+def get_games(data_holder: DataHolder) -> list:
     # Get all games in the database
-    if len(fake_database.games) <= 0:
+    if len(data_holder.games_data) <= 0:
         return []
 
     games = []
-    for id in fake_database.games.keys():
+    for id in data_holder.games_data.keys():
         games.append(id)
     
     return games
 
-def get_game_info(game_id: int, fake_database: FakeDatabase) -> dict:
+def get_game_info(game_id: int, data_holder: DataHolder) -> dict:
     # Get game info from database using id
 
-    return fake_database.games[game_id]
-
-    #game_info = {
-    #    "name": "",
-    #    "id": 0,
-    #    "description": "",
-    #    "price": 0.0,
-    #}
-
-    #return game_info
+    return data_holder.games_data[game_id]

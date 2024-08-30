@@ -1,27 +1,25 @@
 import random
-#from utils.classes.fake_database import FakeDatabase
-from classes.DataHolder import DataHolder
+from utils.classes.DataHolder import DataHolder
 import utils.DataManager as DataManager
-#import api.classes.fake_database as FakeDB
 
 
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
 
-    for user_id in data_holder.users:
-        user_data = data_holder.users[user_id]
+    for user_id in data_holder.users_data:
+        user_data = data_holder.users_data[user_id]
         if user_data["username"] == username:
             if user_data["password"] == password:
-                print(f"\nLogged in succesfully as {user_data["username"]}\n")
+                print(f"'\033[92m'\nLogged in succesfully as {user_data["username"]}\n'\033[0m'")
                 print(user_data)
                 return user_data
             else:
-                print(f"\nIncorrect Password")
+                print(f"'\033[92m'\nIncorrect Password'\033[0m'")
                 return {}
                 break
 
-    print(f"\nFailed to log in | Users in database: \n{data_holder.users_data}\n")
+    print(f"'\033[92m'\nFailed to log in | Users in database: \n{data_holder.users_data}\n'\033[0m'")
     return -1
 
 
@@ -37,5 +35,5 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
         "library": []
     }
 
-    data_holder.users[user_data["id"]] = user_data
+    data_holder.users_data[user_data["id"]] = user_data
     DataManager.append_data(user_data, data_holder.userdata_path)
