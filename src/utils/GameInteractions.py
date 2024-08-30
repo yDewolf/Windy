@@ -35,3 +35,5 @@ def get_game_info(game_id: int, data_holder: DataHolder) -> dict:
     # Get game info from database using id
 
     return data_holder.games_data[game_id]
+
+

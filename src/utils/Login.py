@@ -1,6 +1,8 @@
 import random
 from utils.classes.DataHolder import DataHolder
 import utils.DataManager as DataManager
+import framework.PrintFramework as PrintFramework
+from framework.PrintFramework import Colors
 
 
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
@@ -10,10 +12,12 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
 
     if users.get(username):
         if users[username]["password"] == password:
-            print(f"\033[92m\nLogged in succesfully as {username}\n\033[0m")
+            #print(f"{Colors.GREEN}Logged in succesfully as {username}{Colors.ENDC}")
+            PrintFramework.custom_print(f"Logged in succesfully as {username}", Colors.GREEN)
             return users[username]
         else:
-            print(f"\033[93m\nIncorrect Password\033[0m")
+            PrintFramework.custom_print(f"")
+            #print(f"{Colors.GREEN}\nIncorrect Password{Colors.ENDC}")
             return {}
     else:
         print("\033[91mERROR: User doesn't exist\033[0m")
