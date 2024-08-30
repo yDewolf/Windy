@@ -1,30 +1,19 @@
-import utils.classes.fake_database as FakeDB
 import utils.Login as ApiLogin
 import utils.GameInteractions as ApiGameInteractions
 import utils.DataManager as DataManager
 
-using_database = FakeDB.FakeDatabase()
-using_database.games = DataManager.load_gamedata(using_database.gamedata_path)
-using_database.users = DataManager.load_userdata(using_database.userdata_path)
+import utils.classes.Session as Session
+import utils.classes.DataHolder as DataHolder
 
+default_gamedata_path: str = "data/gamedata.csv"
+default_userdata_path: str = "data/userdata.csv"
 
-#test_games = [
-#    {
-#        "name": "Muck",
-#        "description": "Muck is a cool game :) (pls buy)",
-#        "price": 5.0,
-#    },
-#    {
-#        "name": "Sekiro",
-#        "description": "I like sekiro, sekiro has cool mechanics, give it a try",
-#        "price": 100.0,
-#    }
-#]
+data_holder: DataHolder = DataHolder()
 
-#for game_info in test_games:
-#    ApiGameInteractions.publish_game(game_info, using_database)
+data_holder.games_data = DataManager.load_gamedata(default_gamedata_path)
+data_holder.users_data = DataManager.load_userdata(default_userdata_path)
 
-user_data = {}
+current_session = Session.start_session()
 
 while True:
     print(f"1-Login Menu\n2-Sign In Menu\n3-Look For Games\n0-Quit")
@@ -36,15 +25,15 @@ while True:
         case 1:
             username = input("Username: ")
             password = input("Password: ")
-            user_data = ApiLogin.log_in(username, password, using_database)
+            current_session.session_login(username, password)
         case 2:
             username = input("Username: ")
             password = input("Password: ")
             email = input("Email: ")
             ApiLogin.sign_in(username, email, password, using_database)
-            user_data = ApiLogin.log_in(username, password, using_database)
+            current_session.session_login(username, password)
         case 3:
-            if len(user_data.keys()) == 0:
+            if not current_session.online:
                 print("You need to log in to see the games \n")
                 continue
             
