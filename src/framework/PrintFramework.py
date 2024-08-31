@@ -9,4 +9,4 @@ class Colors(enum.Enum):
     ENDC = "\033[0m"
 
 def custom_print(text: str, color: Colors):
-    print(str(color) + f" {text}" + str(Colors.ENDC))
+    print(f"{color.value}{text}{Colors.ENDC.value}")

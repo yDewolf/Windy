@@ -1,4 +1,6 @@
 from utils.DataManager import load_csv
+from framework.PrintFramework import Colors
+import framework.PrintFramework as PrintFramework
 
 class DataHolder:
     gamedata_path: str
@@ -22,7 +24,7 @@ def load_userdata(data_path: str, debug=True) -> dict:
 
     for data in users_data:
         if debug:
-            print(f"'\033[92m'\nParsing data: {data}\nCurrent userdata: {userdata}\n'\033[0m'")
+            PrintFramework.custom_print(f"\nParsing data: {data}\nCurrent userdata: {userdata}\n", Colors.CYAN)
         userdata[int(data["id"])] = {
             "username": data["username"],
             "password": data["password"],
@@ -38,7 +40,8 @@ def load_gamedata(data_path: str, debug=True) -> dict:
 
     for data in games_data:
         if debug:
-            print(f"'\033[92m'\nParsing data: {data}\nCurrent gamedata: {gamedata}\n'\033[0m'")
+            PrintFramework.custom_print(f"\nParsing data: {data}\nCurrent gamedata: {userdata}\n", Colors.CYAN)
+
 
         gamedata[int(data["id"])] = {
             "name": data["name"],

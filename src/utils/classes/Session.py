@@ -1,5 +1,9 @@
 from utils.Login import log_in
 from utils.classes.DataHolder import DataHolder
+from framework.PrintFramework import Colors
+import framework.PrintFramework as PrintFramework
+
+debug = False
 
 class Session:
     session_id: int
@@ -19,8 +23,8 @@ class Session:
             self.user_data = error
             self.online = True
         
-        else:
-            print(f"ERROR: Failed to log in")
+        elif debug:
+            PrintFramework.custom_print(f"ERROR: Failed to log in", Colors.WARNING)
 
 
 def start_session(data_holder) -> Session:

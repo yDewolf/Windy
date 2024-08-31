@@ -4,7 +4,9 @@ import utils.DataManager as DataManager
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
 
+debug = True
 
+# Really bad and unsafe login system
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
@@ -12,28 +14,18 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
 
     if users.get(username):
         if users[username]["password"] == password:
-            #print(f"{Colors.GREEN}Logged in succesfully as {username}{Colors.ENDC}")
             PrintFramework.custom_print(f"Logged in succesfully as {username}", Colors.GREEN)
             return users[username]
         else:
-            PrintFramework.custom_print(f"")
-            #print(f"{Colors.GREEN}\nIncorrect Password{Colors.ENDC}")
+            PrintFramework.custom_print(f"\nIncorrect Password", Colors.WARNING)
             return {}
-    else:
-        print("\033[91mERROR: User doesn't exist\033[0m")
-    #for user_id in data_holder.users_data:
-    #    user_data = data_holder.users_data[user_id]
-    #    if user_data["username"] == username:
-    #        if user_data["password"] == password:
-    #            print(f"'\033[92m'\nLogged in succesfully as {user_data["username"]}\n'\033[0m'")
-    #            print(user_data)
-    #            return user_data
-    #        else:
-    #            print(f"'\033[92m'\nIncorrect Password'\033[0m'")
-    #            return {}
-    #            break
+    
+    PrintFramework.custom_print(f"User not found in database", Colors.WARNING)
 
-    print(f"\033[91m\nFailed to log in | Users in database: \n{users}\n\033[0m")
+    if debug:
+        PrintFramework.custom_print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^\nIs this an Error?", Colors.WARNING)
+        PrintFramework.custom_print(f"\nFailed to log in | Users in database: \n{users}", Colors.FAIL)
+    
     return -1
 
 
