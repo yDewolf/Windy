@@ -1,2 +1,4 @@
 *.pyc
-
+/src/utils/__pycache__
+/data/backup
+/src/utils/classes/__pycache__
