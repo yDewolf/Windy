@@ -108,7 +108,12 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
 
 def str_convert(value: str):
     if value.startswith("[") and value.endswith("]"):
-        return list(value.replace(";", ",").replace("]", "").replace("[", ""))
+        value_list = list(value.replace(";", ",").replace("]", "").replace("[", ""))
+        converted = []
+        for val in value_list:
+            converted.append(str_convert(val))
+
+        return converted
     
     elif value.startswith("'") and value.endswith("'"):
         print(value)

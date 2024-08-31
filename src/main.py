@@ -29,7 +29,6 @@ def login_menu():
     password = input("Password: ")
     current_session.session_login(username, password)
 
-
 def sign_in_menu():
     MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")
 
@@ -39,6 +38,11 @@ def sign_in_menu():
     ApiLogin.sign_in(username, email, password, data_holder)
     current_session.session_login(username, password)
 
+def sign_out_menu():
+    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "I'm sure I want to sign out")
+    current_session.session_signout()
+    PrintFramework.custom_print("Signed out succesfully | You are now offline", Colors.GREEN)
+
 
 def game_catalog_menu():
     print("-----------------------")
@@ -47,7 +51,9 @@ def game_catalog_menu():
     buy_options: list[int] = []
     for gameId in data_holder.games_data:
         game_info = data_holder.games_data[gameId]
-        PrintFramework.custom_print(f"\n--- {game_info["name"]} ---", Colors.HEADER)
+        game_status: bool = current_session.user_data["library"].count(gameId) > 0
+
+        PrintFramework.custom_print(f"\n--- {game_info["name"]} --- Already Owned: {game_status}", Colors.HEADER)
         PrintFramework.custom_print(f"{game_info["description"]}", Colors.CYAN)
         PrintFramework.custom_print(f"Game price: {game_info["price"]}", Colors.WARNING, False)
         print(f" | Select Purchase game and then type: {gameId}, to buy {game_info["name"]}")
@@ -78,28 +84,56 @@ def game_catalog_menu():
     # FIX ME
     GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
 
+def library_menu():
+    print("-----------------------")
+    print("Games in Library:")
 
-def show_catalog():
+    for gameId in current_session.user_data["library"]:
+        game_info = data_holder.games_data[gameId]
+        PrintFramework.custom_print(f"\n--- {game_info["name"]} ---", Colors.HEADER)
+        PrintFramework.custom_print(f"{game_info["description"]}", Colors.CYAN)
+    
+    print("-----------------------")
+
+    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Do nothing")
+
+def is_online():
     # if session is online: 
     #   Show catalog menu option
     # else:
     #   Don't show catalog menu option
     return current_session.online
 
+# Dumb way of solving the "not is_online" not working on menu["condition"]()
+def is_offline():
+    return not is_online()
+
 
 menus = [
     # Show menuIdx as menuIdx + 1
     {
         "name": "Login Menu",
+        "condition": is_offline,
         "callable": login_menu
     },
     {
         "name": "Sign in Menu",
+        "condition": is_offline,
         "callable": sign_in_menu
     },
     {
+        "name": "Sign out",
+        "condition": is_online,
+        "callable": sign_out_menu,
+    },
+    {
+        "name": "My Library",
+        "condition": is_online,
+        "callable": library_menu
+    },
+    {
         "name": "Game catalog",
-        "condition": show_catalog,
+        "condition": is_online,
         "callable": game_catalog_menu
     }
 ]

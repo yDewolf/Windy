@@ -27,6 +27,10 @@ class Session:
         elif debug:
             PrintFramework.custom_print(f"ERROR: Failed to log in", Colors.WARNING)
 
+    def session_signout(self):
+        self.user_data = {}
+        self.online = False
+
 
 def start_session(data_holder) -> Session:
     return Session(data_holder)
