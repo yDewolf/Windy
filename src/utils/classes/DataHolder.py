@@ -40,7 +40,7 @@ def load_gamedata(data_path: str, debug=True) -> dict:
 
     for data in games_data:
         if debug:
-            PrintFramework.custom_print(f"\nParsing data: {data}\nCurrent gamedata: {userdata}\n", Colors.CYAN)
+            PrintFramework.custom_print(f"\nParsing data: {data}\nCurrent gamedata: {gamedata}\n", Colors.CYAN)
 
 
         gamedata[int(data["id"])] = {

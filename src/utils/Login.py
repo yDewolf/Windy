@@ -33,6 +33,16 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
     # Check if already has an user with the same username or email
     # Register user on database
 
+    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username"])
+    if users.get(username):
+        PrintFramework.custom_print("User already exists", Colors.WARNING)
+        return
+    
+    emails = DataManager.load_csv_columns(data_holder.userdata_path, ["email"])
+    if emails.get(email):
+        PrintFramework.custom_print("Email is already in use", Colors.WARNING)
+        return
+
     user_data = {
         "id": random.randrange(0, 65535),
         "username": username,

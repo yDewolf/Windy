@@ -16,6 +16,7 @@ class Session:
         self.session_id = -1
         self.user_data = {}
         self.data_holder = data_holder
+        self.online = False
 
     def session_login(self, username: str, password: str):
         error = log_in(username, password, self.data_holder)
