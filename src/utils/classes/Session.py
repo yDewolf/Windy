@@ -15,10 +15,21 @@ class Session:
     data_holder: DataHolder
     logged_accounts: dict
 
-    def __init__(self, data_holder: DataHolder) -> None:
+    def __init__(self, data_holder: DataHolder, accounts_path: str="", auto_login: bool=False) -> None:
+        self.data_holder = data_holder
+        if auto_login:
+            self.update_logged_accounts(accounts_path)
+
+            accounts = self.logged_accounts
+            username = list(enumerate(accounts))[0][1]
+            self.session_login(username, accounts[username]["password"])
+            return
+
+        if accounts_path != "":
+            self.update_logged_accounts(accounts_path)
+
         self.session_id = -1
         self.user_data = {}
-        self.data_holder = data_holder
         self.online = False
 
     def update_logged_accounts(self, accounts_path: str):
@@ -41,6 +52,6 @@ class Session:
         self.online = False
 
 
-def start_session(data_holder) -> Session:
-    return Session(data_holder)
+def start_session(data_holder, accounts_path: str="", auto_login: bool=False) -> Session:
+    return Session(data_holder, accounts_path, auto_login)
 

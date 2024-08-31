@@ -76,10 +76,12 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
         if columns.__contains__(header[header_keyIdx]):
             target_columns.append(header_keyIdx)
 
-    main_keyIdx = header.index(columns[0])    
 
     values = []
+    main_keyIdx = 0
     if use_main_key:
+        if len(target_columns) > 1:
+            main_keyIdx = header.index(columns[0])
         values = {}
 
     # Append line values to a dictionary using the header as keys

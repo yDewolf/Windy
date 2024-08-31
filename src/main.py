@@ -18,8 +18,10 @@ default_logged_accounts_path: str = "session_data/logged_accounts.csv"
 
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path)
 
-current_session = Session.start_session(data_holder)
-current_session.update_logged_accounts(default_logged_accounts_path)
+auto_login = True
+
+current_session = Session.start_session(data_holder, default_logged_accounts_path, auto_login)
+
 
 # Menu Callables
 
@@ -28,7 +30,8 @@ def main_menu():
 
 
 def login_menu():
-    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")    
+    if not MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue") == -1:
+        return
 
     if len(current_session.logged_accounts) != 0:
         PrintFramework.custom_print(f"You have logged accounts: ", Colors.HEADER)
@@ -37,7 +40,7 @@ def login_menu():
         account_list = []
         
         for username in accounts:
-            PrintFramework.custom_print(f"To log in as {username}, type {len(account_list)}", Colors.HEADER)
+            PrintFramework.custom_print(f"To log in as {Colors.CYAN.value}{username}{Colors.ENDC.value}{Colors.HEADER.value}, type {len(account_list)}", Colors.HEADER)
             account_list.append(username)
         
         # If not selected Log in Previous Accounts
