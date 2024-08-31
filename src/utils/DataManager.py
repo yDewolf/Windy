@@ -116,7 +116,6 @@ def str_convert(value: str):
         return converted
     
     elif value.startswith("'") and value.endswith("'"):
-        print(value)
         return str(value.replace("'", ""))
 
     # Value is a valid number
@@ -186,8 +185,9 @@ def simple_dict_to_csv(data_dict: dict) -> str:
 
     for keyIdx in range(len(keys)):
         key = keys[keyIdx]
-        
-        csv_text += str(data_dict[key]).replace(",", ";")
+        value = convert_to_str(data_dict[key])
+
+        csv_text += value
         if keyIdx < len(keys) - 1:
             csv_text += ","
         

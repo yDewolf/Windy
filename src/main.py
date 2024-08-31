@@ -1,4 +1,5 @@
 import utils.Login as ApiLogin
+import utils.DataManager as DataManager
 
 import utils.classes.Session as Session
 from utils.classes.DataHolder import DataHolder
@@ -13,21 +14,56 @@ from framework.PrintFramework import Colors
 default_gamedata_path: str = "data/gamedata.csv"
 default_userdata_path: str = "data/userdata.csv"
 
+default_logged_accounts_path: str = "session_data/logged_accounts.csv"
+
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path)
 
 current_session = Session.start_session(data_holder)
+current_session.update_logged_accounts(default_logged_accounts_path)
 
+# Menu Callables
 
 def main_menu():
     return MenuManager.option_menu(menus)
 
 
 def login_menu():
-    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")
+    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")    
 
+    if len(current_session.logged_accounts) != 0:
+        PrintFramework.custom_print(f"You have logged accounts: ", Colors.HEADER)
+
+        accounts = current_session.logged_accounts
+        account_list = []
+        
+        for username in accounts:
+            PrintFramework.custom_print(f"To log in as {username}, type {len(account_list)}", Colors.HEADER)
+            account_list.append(username)
+        
+        # If not selected Log in Previous Accounts
+        if not MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts") == -1:
+            return
+        
+        PrintFramework.custom_print("Type the account number to log in", Colors.ENDC)
+        account_number = -1
+        while account_number < 0 or account_number > len(account_list):
+            account_number = int(input())
+            if account_number < 0 or account_number > len(account_list):
+                PrintFramework.custom_print("Invalid account number", Colors.WARNING)
+        
+        current_session.session_login(account_list[account_number], accounts[account_list[account_number]]["password"])
+        return
+
+    login_new_account()
+
+def login_new_account():
     username = input("Username: ")
     password = input("Password: ")
-    current_session.session_login(username, password)
+    
+    # If logged in succesfully
+    if current_session.session_login(username, password):
+        remember_account(username, password)
+
 
 def sign_in_menu():
     MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")
@@ -36,7 +72,23 @@ def sign_in_menu():
     password = input("Password: ")
     email = input("Email: ")
     ApiLogin.sign_in(username, email, password, data_holder)
-    current_session.session_login(username, password)
+    if current_session.session_login(username, password):
+        remember_account(username, password)
+
+
+def remember_account(username, password):
+    remember = -1
+    PrintFramework.custom_print("Remember account?\n", Colors.ENDC)
+    PrintFramework.custom_print("1-Yes", Colors.GREEN)
+    PrintFramework.custom_print("0-No", Colors.FAIL)
+    while remember != 1 and remember != 0:
+        remember = int(input())
+        if remember != 1 and remember != 0:
+            PrintFramework.custom_print("Invalid option", Colors.WARNING)
+    
+    if remember:
+        DataManager.append_data({"username": username, "password": password}, default_logged_accounts_path)
+
 
 def sign_out_menu():
     MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "I'm sure I want to sign out")
@@ -97,6 +149,8 @@ def library_menu():
 
     MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Do nothing")
 
+# Menu Conditions
+
 def is_online():
     # if session is online: 
     #   Show catalog menu option
@@ -109,6 +163,7 @@ def is_offline():
     return not is_online()
 
 
+# Menu Indexing
 menus = [
     # Show menuIdx as menuIdx + 1
     {
@@ -137,6 +192,7 @@ menus = [
         "callable": game_catalog_menu
     }
 ]
+
 
 while True:
     if main_menu() == -1:
