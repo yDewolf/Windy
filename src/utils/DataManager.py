@@ -2,13 +2,17 @@ import datetime
 default_backup_path: str = "data/backup/"
 
 # Saves the currently loaded data, overwriting the previous file and creating a backup of the previous .csv
-def save_data(data: dict, data_path: str, backup: bool=True, backup_path: str=default_backup_path):
-    file = open(data_path, "r")
+def overwrite_data(data: dict, data_path: str, backup: bool=True, backup_path: str=default_backup_path):
     if backup:
-        backup_data(file, data_path, backup_path)
-    
+        backup_data(data_path, backup_path)
+
+    file = open(data_path, "r")
     header = file.readline().replace("\n", "").split(",")
+
     csv_text = dict_to_csv(data, header)
+
+    file.close()
+    file = open(data_path, "w")
 
     file.write(csv_text)
     file.close()
@@ -17,9 +21,8 @@ def save_data(data: dict, data_path: str, backup: bool=True, backup_path: str=de
 # Can backup or not the .csv file
 def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, backup_path: str=default_backup_path):
     file = open(data_path, "a")
-    readable_file = open(data_path, "r")
     if backup:
-        backup_data(readable_file, data_path, backup_path)
+        backup_data(data_path, backup_path)
     
     csv_text = simple_dict_to_csv(data)
     if new_line:
@@ -30,13 +33,14 @@ def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, ba
 
 # Duplicates the selected file to a new path
 # Adds to the file name the date and time that the file was created
-def backup_data(file, file_path: str, backup_path: str):
+def backup_data(file_path: str, backup_path: str):
     file_name = file_path.split("/")[-1] # Get file name from the file path
 
     # Add file format + create a new file
     backup_file = open(backup_path + file_name.split(".")[0] + "_" + (datetime.datetime.now()).strftime("%d%m%Y_%H-%M-%S") + "." + file_name.split(".")[-1], "w")
     
     # Duplicate file content to the new file
+    file = open(file_path, "r")
     file_text = file.read()
     backup_file.write(file_text)
     backup_file.close()
@@ -54,7 +58,9 @@ def load_csv(data_path: str) -> list[dict]:
         line_values = line.split(",")
 
         for valueIdx in range(len(line_values)):
-            line_dict[header[valueIdx]] = line_values[valueIdx].replace("\n", "")
+            value = str_convert(line_values[valueIdx].replace("\n", ""))
+            line_dict[header[valueIdx]] = value
+        
         values.append(line_dict)
     
     file.close()
@@ -69,12 +75,12 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
     for header_keyIdx in range(len(header)):
         if columns.__contains__(header[header_keyIdx]):
             target_columns.append(header_keyIdx)
-    
 
+    main_keyIdx = header.index(columns[0])    
+
+    values = []
     if use_main_key:
         values = {}
-    else:
-        values = []
 
     # Append line values to a dictionary using the header as keys
     for line in file:
@@ -82,13 +88,15 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
         line_values = line.split(",")
 
         for valueIdx in target_columns:
-            if use_main_key and valueIdx == 0:
+            if use_main_key and valueIdx == main_keyIdx:
                 continue
+            
+            value = str_convert(line_values[valueIdx].replace("\n", ""))
 
-            line_dict[header[valueIdx]] = line_values[valueIdx].replace("\n", "")
+            line_dict[header[valueIdx]] = value
         
         if use_main_key:
-            values[line_values[target_columns[0]]] = line_dict
+            values[str_convert(line_values[target_columns[main_keyIdx]])] = line_dict
         else:
             values.append(line_dict)
 
@@ -96,6 +104,30 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
     file.close()
 
     return values
+
+
+def str_convert(value: str):
+    if value.startswith("[") and value.endswith("]"):
+        return list(value.replace(";", ",").replace("]", "").replace("[", ""))
+    
+    elif value.startswith("'") and value.endswith("'"):
+        print(value)
+        return str(value.replace("'", ""))
+
+    # Value is a valid number
+    elif value.count(".") != 0: #int(value) != 0 or value == "0":
+        return float(value)
+
+    return int(value)
+    
+def convert_to_str(value):
+    if type(value) == str:
+        return "'" + value + "'"
+
+    elif type(value) == list:
+        return str(value).replace(",", ";")
+
+    return str(value)
 
 # Reads a dictionary and returns a csv text
 # This function is mainly used on dicts that has dicts inside of it. Ex:
@@ -121,10 +153,11 @@ def dict_to_csv(data_dict: dict, header: list[str]=[]) -> str:
 
     for main_key in data_dict:
         dict = data_dict[main_key]
-        csv_line: str = str(main_key)
+        csv_line: str = convert_to_str(main_key)
         for key in dict:
-            print(key, dict)
-            csv_line += "," + str(dict[key])
+            value_text = convert_to_str(dict[key])
+            
+            csv_line += "," + value_text
         
         lines.append(csv_line)
     
@@ -148,10 +181,9 @@ def simple_dict_to_csv(data_dict: dict) -> str:
 
     for keyIdx in range(len(keys)):
         key = keys[keyIdx]
-        print(key)
-        csv_text += str(data_dict[key])
+        
+        csv_text += str(data_dict[key]).replace(",", ";")
         if keyIdx < len(keys) - 1:
             csv_text += ","
         
     return csv_text
-

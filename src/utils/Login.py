@@ -10,11 +10,12 @@ debug = True
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
-    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username", "password"])
+    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username", "password", "id", "library"])
 
     if users.get(username):
         if users[username]["password"] == password:
             PrintFramework.custom_print(f"Logged in succesfully as {username}", Colors.GREEN)
+
             return users[username]
         else:
             PrintFramework.custom_print(f"\nIncorrect Password", Colors.WARNING)

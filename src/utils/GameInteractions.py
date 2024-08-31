@@ -1,14 +1,20 @@
 import random
 from utils.classes.DataHolder import DataHolder
+import utils.DataManager as DataManager
+
+import framework.PrintFramework as PrintFramework
+from framework.PrintFramework import Colors
 
 # Inserts a new game to the user data / csv
 def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
-    if user_data["library"].has(game_id):
-        print("WARNING: Game is already purchased")
+    user_library: list = user_data["library"]
+    if user_library.count(game_id) != 0:
+        PrintFramework.custom_print("This game is already in your library", Colors.WARNING)
         return -1
 
     user_data["library"].append(game_id)
     data_holder.users_data[user_data["id"]]["library"].append(game_id)
+    DataManager.overwrite_data(data_holder.users_data, data_holder.userdata_path)
 
 # Inserts a new game on the games data / csv
 def publish_game(game_info: dict, data_holder: DataHolder):

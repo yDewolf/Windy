@@ -76,11 +76,7 @@ def game_catalog_menu():
         return
     
     # FIX ME
-    #GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
-
-    
-
-
+    GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
 
 
 def show_catalog():
