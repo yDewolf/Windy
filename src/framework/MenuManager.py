@@ -25,6 +25,10 @@ def option_menu(options: list[dict], option_0: str="Quit"):
             custom_print(f"\nInvalid option index\n", Colors.WARNING)
 
     if input_char == 0:
-        return -1
+        return input_char
 
-    possible_options[input_char - 1]["callable"]()
+    if possible_options[input_char - 1].get("callable"):
+        possible_options[input_char - 1]["callable"]()
+        return
+    
+    return input_char

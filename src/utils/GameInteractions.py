@@ -7,10 +7,8 @@ from framework.PrintFramework import Colors
 
 # Inserts a new game to the user data / csv
 def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
-    user_library: list = user_data["library"]
-    if user_library.count(game_id) != 0:
-        PrintFramework.custom_print("This game is already in your library", Colors.WARNING)
-        return -1
+    if check_bought(game_id, user_data):
+        return
 
     user_data["library"].append(game_id)
     data_holder.users_data[user_data["id"]]["library"].append(game_id)
@@ -43,3 +41,11 @@ def get_game_info(game_id: int, data_holder: DataHolder) -> dict:
     return data_holder.games_data[game_id]
 
 
+
+def check_bought(game_id, user_data: dict):
+    user_library: list = user_data["library"]
+    if user_library.count(game_id) != 0:
+        #PrintFramework.custom_print("This game is already in your library", Colors.WARNING)
+        return True
+    
+    return False

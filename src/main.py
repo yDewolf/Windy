@@ -1,4 +1,4 @@
-import utils.Login as ApiLogin
+import utils.AccountUtils as ApiLogin
 import utils.DataManager as DataManager
 
 import utils.classes.Session as Session
@@ -7,16 +7,18 @@ from utils.classes.DataHolder import DataHolder
 import framework.MenuManager as MenuManager
 
 import utils.GameInteractions as GameInteractions
+import utils.AccountUtils as AccountUtils
 
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
 
 default_gamedata_path: str = "data/gamedata.csv"
 default_userdata_path: str = "data/userdata.csv"
+default_devdata_path: str = "data/developerdata.csv"
 
 default_logged_accounts_path: str = "session_data/logged_accounts.csv"
 
-data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path)
+data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
 
 auto_login = True
 
@@ -30,23 +32,25 @@ def main_menu():
 
 
 def login_menu():
-    if not MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue") == -1:
+    if MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue"):
         return
 
     if len(current_session.logged_accounts) != 0:
         PrintFramework.custom_print(f"You have logged accounts: ", Colors.HEADER)
 
+        
+        # If not selected Log in Previous Accounts
+        if MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
+            return
+        
+        
         accounts = current_session.logged_accounts
         account_list = []
-        
         for username in accounts:
             PrintFramework.custom_print(f"To log in as {Colors.CYAN.value}{username}{Colors.ENDC.value}{Colors.HEADER.value}, type {len(account_list)}", Colors.HEADER)
             account_list.append(username)
         
-        # If not selected Log in Previous Accounts
-        if not MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts") == -1:
-            return
-        
+
         PrintFramework.custom_print("Type the account number to log in", Colors.ENDC)
         account_number = -1
         while account_number < 0 or account_number > len(account_list):
@@ -94,7 +98,9 @@ def remember_account(username, password):
 
 
 def sign_out_menu():
-    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "I'm sure I want to sign out")
+    if MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "I'm sure I want to sign out"):
+        return
+
     current_session.session_signout()
     PrintFramework.custom_print("Signed out succesfully | You are now offline", Colors.GREEN)
 
@@ -118,13 +124,18 @@ def game_catalog_menu():
     print("\n-----------------------\n")
 
     game_id = -1
-    while not data_holder.games_data.get(game_id):
-        MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Purchase games")
+    while not data_holder.games_data.get(game_id) or GameInteractions.check_bought(game_id, current_session.user_data):
+        if MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu") == 0:
+            return
+
         game_id = int(input("Type the game id to purchase it: "))
 
         if not data_holder.games_data.get(game_id):
             PrintFramework.custom_print(f"Invalid game id", Colors.WARNING)
     
+        if GameInteractions.check_bought(game_id, current_session.user_data):
+            PrintFramework.custom_print("You already have this game", Colors.WARNING)
+
     confirm = -1
     while confirm != 0 and confirm != 1:
         PrintFramework.custom_print("Type 1 to confirm purchase", Colors.GREEN)
@@ -151,6 +162,66 @@ def library_menu():
     print("-----------------------")
 
     MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Do nothing")
+
+
+def account_settings_menu():
+    settings = [
+        {
+            "name": "Be a developer",
+        }
+    ]
+
+    menu_idx = MenuManager.option_menu(settings, "Quit")
+    match menu_idx:
+        case 0:
+            return
+        case 1:
+            PrintFramework.custom_print("Do you want to enter the Developers Project?", Colors.HEADER)
+            PrintFramework.custom_print("What is the Developers Project?", Colors.WARNING)
+            print("The Developers Project is a group of developers that develop for the Windy Platform")
+            PrintFramework.custom_print("What can I do as a Developer?", Colors.WARNING)
+            print("As a developer, you can publish your own games to our platform and earn money with its sells")
+            PrintFramework.custom_print("What I need to be a Developer?", Colors.WARNING)
+            print("To be a developer you only need to assign your account as a developer account, to do this you need to fulfill some personal info:")
+            print("(CNPJ or CPF, First and Last name, Address)")
+
+            sign_in_error = 0
+            while not sign_in_error:
+                PrintFramework.custom_print("\nDo you want to proceed to be a Developer?", Colors.WARNING)
+                if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}"):
+                    return
+
+                print("Please fill the fields with your info")
+
+                PrintFramework.custom_print(f"Fill this field with your first and last name: ", Colors.HEADER)
+                name = input()
+
+                PrintFramework.custom_print(f"Fill this field with your address", Colors.HEADER)
+                address = input()
+
+                cpf = 0
+                cnpj = 0
+                PrintFramework.custom_print(f"When filling the CNPJ and CPF USE ONLY NUMBERS", Colors.WARNING)
+                while cnpj == 0 and cpf == 0:
+                    cpf = (input("If you don't want to register as a Physical Person, please let this field empty and fill the CNPJ: \nCPF: "))
+                    cnpj = (input("If you don't have a CNPJ, please let this field empty and fill the CPF: \nCNPJ: "))
+                    if cnpj == "":
+                        cnpj = 0
+                    if cpf == "":
+                        cpf = 0
+                    
+                    cpf = int(cpf)
+                    cnpj = int(cnpj)
+
+                    if cnpj == 0 and cpf == 0:
+                        PrintFramework.custom_print("You can't leave both CNPJ and CPF empty, you need to fill at least one of them", Colors.WARNING)
+
+                PrintFramework.custom_print(f"\nNow you need to give your developer account a name", Colors.HEADER)
+                dev_name = input()
+
+                sign_in_error = AccountUtils.sign_as_dev(current_session.user_data["id"], dev_name, cpf, cnpj, name, address, data_holder)
+            PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
+
 
 # Menu Conditions
 
@@ -193,10 +264,15 @@ menus = [
         "name": "Game catalog",
         "condition": is_online,
         "callable": game_catalog_menu
+    },
+    {
+        "name": "Account Settings",
+        "condition": is_online,
+        "callable": account_settings_menu
     }
 ]
 
 
 while True:
-    if main_menu() == -1:
+    if main_menu() == 0:
         break

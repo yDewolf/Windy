@@ -1,4 +1,4 @@
-from utils.Login import log_in
+from utils.AccountUtils import log_in
 from utils.classes.DataHolder import DataHolder
 from framework.PrintFramework import Colors
 import framework.PrintFramework as PrintFramework
@@ -12,6 +12,8 @@ class Session:
     user_data: dict
     
     online: bool
+    is_developer: bool
+
     data_holder: DataHolder
     logged_accounts: dict
 
@@ -40,6 +42,15 @@ class Session:
         if error != {} and error != -1:
             self.user_data = error
             self.online = True
+
+            developers = DataManager.load_csv_columns(self.data_holder.devdata_path, ["id", "dev_name"])
+            self.is_developer = False
+            if developers.get(self.user_data["id"]):
+                self.is_developer = True
+        
+            if self.is_developer:
+                PrintFramework.custom_print("Logged as a developer", Colors.GREEN)
+            
             return True
 
         elif debug:

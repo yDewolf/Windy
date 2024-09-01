@@ -4,15 +4,17 @@ import framework.PrintFramework as PrintFramework
 
 class DataHolder:
     gamedata_path: str
+    devdata_path: str
     userdata_path: str
 
     games_data: dict
     users_data: dict
 
-    def __init__(self, gamed_path: str, userd_path: str) -> None:
+    def __init__(self, gamed_path: str, userd_path: str, devdata_path: str) -> None:
         self.gamedata_path = gamed_path
         self.userdata_path = userd_path
-        
+        self.devdata_path = devdata_path
+
         self.games_data = load_gamedata(gamed_path)
         self.users_data = load_userdata(userd_path)
 
