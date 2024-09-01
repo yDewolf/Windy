@@ -31,7 +31,7 @@ def main_menu():
 
 
 def login_menu():
-    if MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
         return
 
     if len(current_session.logged_accounts) != 0:
@@ -39,7 +39,7 @@ def login_menu():
 
         
         # If not selected Log in Previous Accounts
-        if MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
+        if not MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
             return
         
         
@@ -73,7 +73,8 @@ def login_new_account():
 
 
 def sign_in_menu():
-    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Continue")
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
+        return
 
     username = input("Username: ")
     password = input("Password: ")
@@ -100,7 +101,7 @@ def remember_account(username, password):
 
 
 def sign_out_menu():
-    if MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "I'm sure I want to sign out"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "I'm sure I want to sign out"):
         return
 
     current_session.session_signout()
@@ -127,7 +128,7 @@ def game_catalog_menu():
 
     game_id = -1
     while not data_holder.games_data.get(game_id) or GameInteractions.check_bought(game_id, current_session.user_data):
-        if MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu") == 0:
+        if not MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu"):
             return
 
         game_id = int(input("Type the game id to purchase it: "))
@@ -163,7 +164,7 @@ def library_menu():
     
     print("-----------------------")
 
-    MenuManager.option_menu([{"name": "Main Menu", "callable": main_menu}], "Do nothing")
+    MenuManager.option_menu([{"name": "Main Menu"}], "Do nothing")
 
 
 def account_settings_menu():
@@ -178,51 +179,55 @@ def account_settings_menu():
         case 0:
             return
         case 1:
-            PrintFramework.custom_print("Do you want to enter the Developers Project?", Colors.HEADER)
-            PrintFramework.custom_print("What is the Developers Project?", Colors.WARNING)
-            print("The Developers Project is a group of developers that develop for the Windy Platform")
-            PrintFramework.custom_print("What can I do as a Developer?", Colors.WARNING)
-            print("As a developer, you can publish your own games to our platform and earn money with its sells")
-            PrintFramework.custom_print("What I need to be a Developer?", Colors.WARNING)
-            print("To be a developer you only need to assign your account as a developer account, to do this you need to fulfill some personal info:")
-            print("(CNPJ or CPF, First and Last name, Address)")
+            be_a_developer_menu()
 
-            sign_in_error = 0
-            while not sign_in_error:
-                PrintFramework.custom_print("\nDo you want to proceed to be a Developer?", Colors.WARNING)
-                if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}"):
-                    return
+def be_a_developer_menu():
+    PrintFramework.custom_print("Do you want to enter the Developers Project?", Colors.HEADER)
+    PrintFramework.custom_print("What is the Developers Project?", Colors.WARNING)
+    print("The Developers Project is a group of developers that develop for the Windy Platform")
+    PrintFramework.custom_print("What can I do as a Developer?", Colors.WARNING)
+    print("As a developer, you can publish your own games to our platform and earn money with its sells")
+    PrintFramework.custom_print("What I need to be a Developer?", Colors.WARNING)
+    print("To be a developer you only need to assign your account as a developer account, to do this you need to fulfill some personal info:")
+    print("(CNPJ or CPF, First and Last name, Address)")
 
-                print("Please fill the fields with your info")
+    sign_in_error = 0
+    while not sign_in_error:
+        PrintFramework.custom_print("\nDo you want to proceed to be a Developer?", Colors.WARNING)
+        if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}"):
+            return
 
-                PrintFramework.custom_print(f"Fill this field with your first and last name: ", Colors.HEADER)
-                name = input()
+        print("Please fill the fields with your info")
 
-                PrintFramework.custom_print(f"Fill this field with your address", Colors.HEADER)
-                address = input()
+        PrintFramework.custom_print(f"Fill this field with your first and last name: ", Colors.HEADER)
+        name = input()
 
-                cpf = 0
+        PrintFramework.custom_print(f"Fill this field with your address", Colors.HEADER)
+        address = input()
+
+        cpf = 0
+        cnpj = 0
+        PrintFramework.custom_print(f"When filling the CNPJ and CPF USE ONLY NUMBERS", Colors.WARNING)
+        while cnpj == 0 and cpf == 0:
+            cpf = (input("If you don't want to register as a Physical Person, please let this field empty and fill the CNPJ: \nCPF: "))
+            cnpj = (input("If you don't have a CNPJ, please let this field empty and fill the CPF: \nCNPJ: "))
+            if cnpj == "":
                 cnpj = 0
-                PrintFramework.custom_print(f"When filling the CNPJ and CPF USE ONLY NUMBERS", Colors.WARNING)
-                while cnpj == 0 and cpf == 0:
-                    cpf = (input("If you don't want to register as a Physical Person, please let this field empty and fill the CNPJ: \nCPF: "))
-                    cnpj = (input("If you don't have a CNPJ, please let this field empty and fill the CPF: \nCNPJ: "))
-                    if cnpj == "":
-                        cnpj = 0
-                    if cpf == "":
-                        cpf = 0
-                    
-                    cpf = int(cpf)
-                    cnpj = int(cnpj)
+            if cpf == "":
+                cpf = 0
+            
+            cpf = int(cpf)
+            cnpj = int(cnpj)
 
-                    if cnpj == 0 and cpf == 0:
-                        PrintFramework.custom_print("You can't leave both CNPJ and CPF empty, you need to fill at least one of them", Colors.WARNING)
+            if cnpj == 0 and cpf == 0:
+                PrintFramework.custom_print("You can't leave both CNPJ and CPF empty, you need to fill at least one of them", Colors.WARNING)
 
-                PrintFramework.custom_print(f"\nNow you need to give your developer account a name", Colors.HEADER)
-                dev_name = input()
+        PrintFramework.custom_print(f"\nNow you need to give your developer account a name", Colors.HEADER)
+        dev_name = input()
 
-                sign_in_error = AccountUtils.sign_as_dev(current_session.user_data["id"], dev_name, cpf, cnpj, name, address, data_holder)
-            PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
+        sign_in_error = AccountUtils.sign_as_dev(current_session.user_data["id"], dev_name, cpf, cnpj, name, address, data_holder)
+    
+    PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
 
 
 # Menu Conditions

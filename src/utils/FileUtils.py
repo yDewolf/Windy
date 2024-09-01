@@ -14,7 +14,7 @@ def parse_string(value: str):
         return str(value.replace("'", ""))
 
     # Value is a valid number
-    elif value.count(".") != 0: #int(value) != 0 or value == "0":
+    elif value.count(".") != 0:
         return float(value)
 
     elif str(value).lower() == "false":
