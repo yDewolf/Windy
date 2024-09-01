@@ -4,6 +4,7 @@ from framework.PrintFramework import Colors
 import framework.PrintFramework as PrintFramework
 
 import utils.DataManager as DataManager
+import utils.ConfigReader as CfgReader
 
 debug = False
 
@@ -17,13 +18,20 @@ class Session:
     data_holder: DataHolder
     logged_accounts: dict
 
-    def __init__(self, data_holder: DataHolder, accounts_path: str="", auto_login: bool=False) -> None:
+    cfg_path: str
+    config: dict
+
+    def __init__(self, data_holder: DataHolder, accounts_path: str="", cfg_path: str="") -> None:
         self.data_holder = data_holder
-        if auto_login:
+
+        self.cfg_path = cfg_path
+        self.config = CfgReader.read_cfg_file(cfg_path)
+
+        if self.config["auto_login"]:
             self.update_logged_accounts(accounts_path)
 
             accounts = self.logged_accounts
-            username = list(enumerate(accounts))[0][1]
+            username = list(enumerate(accounts))[self.config["last_logged_account"]][1]
             self.session_login(username, accounts[username]["password"])
             return
 
@@ -36,6 +44,11 @@ class Session:
 
     def update_logged_accounts(self, accounts_path: str):
         self.logged_accounts = DataManager.load_csv_columns(accounts_path, ["username", "password"])
+
+    def update_last_logged(self, last_idx: int):
+        self.config["last_logged_account"] = last_idx
+        CfgReader.write_cfg_file(self.cfg_path, self.config)
+
 
     def session_login(self, username: str, password: str):
         error = log_in(username, password, self.data_holder)
@@ -63,6 +76,6 @@ class Session:
         self.online = False
 
 
-def start_session(data_holder, accounts_path: str="", auto_login: bool=False) -> Session:
-    return Session(data_holder, accounts_path, auto_login)
+def start_session(data_holder, accounts_path: str="", cfg_path: str="") -> Session:
+    return Session(data_holder, accounts_path, cfg_path)
 

@@ -17,12 +17,11 @@ default_userdata_path: str = "data/userdata.csv"
 default_devdata_path: str = "data/developerdata.csv"
 
 default_logged_accounts_path: str = "session_data/logged_accounts.csv"
+default_session_cfg_path: str = "config/session_config.cfg"
 
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
 
-auto_login = True
-
-current_session = Session.start_session(data_holder, default_logged_accounts_path, auto_login)
+current_session = Session.start_session(data_holder, default_logged_accounts_path, default_session_cfg_path)
 
 
 # Menu Callables
@@ -59,6 +58,7 @@ def login_menu():
                 PrintFramework.custom_print("Invalid account number", Colors.WARNING)
         
         current_session.session_login(account_list[account_number], accounts[account_list[account_number]]["password"])
+        current_session.update_last_logged(account_number)
         return
 
     login_new_account()
@@ -95,6 +95,8 @@ def remember_account(username, password):
     
     if remember:
         DataManager.append_data({"username": username, "password": password}, default_logged_accounts_path)
+        current_session.update_last_logged(-1)
+
 
 
 def sign_out_menu():

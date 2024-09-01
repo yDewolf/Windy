@@ -1,10 +1,11 @@
-import datetime
+import utils.FileUtils as FileUtils
+
 default_backup_path: str = "data/backup/"
 
 # Saves the currently loaded data, overwriting the previous file and creating a backup of the previous .csv
 def overwrite_data(data: dict, data_path: str, backup: bool=True, backup_path: str=default_backup_path):
     if backup:
-        backup_data(data_path, backup_path)
+        FileUtils.backup_file(data_path, backup_path)
 
     file = open(data_path, "r")
     header = file.readline().replace("\n", "").split(",")
@@ -22,7 +23,7 @@ def overwrite_data(data: dict, data_path: str, backup: bool=True, backup_path: s
 def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, backup_path: str=default_backup_path):
     file = open(data_path, "a")
     if backup:
-        backup_data(data_path, backup_path)
+        FileUtils.backup_file(data_path, backup_path)
     
     csv_text = simple_dict_to_csv(data)
     if new_line:
@@ -31,19 +32,6 @@ def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, ba
     file.write(csv_text)
     file.close()
 
-# Duplicates the selected file to a new path
-# Adds to the file name the date and time that the file was created
-def backup_data(file_path: str, backup_path: str):
-    file_name = file_path.split("/")[-1] # Get file name from the file path
-
-    # Add file format + create a new file
-    backup_file = open(backup_path + file_name.split(".")[0] + "_" + (datetime.datetime.now()).strftime("%d%m%Y_%H-%M-%S") + "." + file_name.split(".")[-1], "w")
-    
-    # Duplicate file content to the new file
-    file = open(file_path, "r")
-    file_text = file.read()
-    backup_file.write(file_text)
-    backup_file.close()
 
 # Loads a .csv file
 def load_csv(data_path: str) -> list[dict]:
@@ -58,7 +46,7 @@ def load_csv(data_path: str) -> list[dict]:
         line_values = line.split(",")
 
         for valueIdx in range(len(line_values)):
-            value = str_convert(line_values[valueIdx].replace("\n", ""))
+            value = FileUtils.parse_string(line_values[valueIdx].replace("\n", ""))
             line_dict[header[valueIdx]] = value
         
         values.append(line_dict)
@@ -93,12 +81,12 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
             if use_main_key and valueIdx == main_keyIdx:
                 continue
             
-            value = str_convert(line_values[valueIdx].replace("\n", ""))
+            value = FileUtils.parse_string(line_values[valueIdx].replace("\n", ""))
 
             line_dict[header[valueIdx]] = value
         
         if use_main_key:
-            values[str_convert(line_values[target_columns[main_keyIdx]])] = line_dict
+            values[FileUtils.parse_string(line_values[target_columns[main_keyIdx]])] = line_dict
         else:
             values.append(line_dict)
 
@@ -106,34 +94,6 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
     file.close()
 
     return values
-
-
-def str_convert(value: str):
-    if value.startswith("[") and value.endswith("]"):
-        value_list = list(value.replace(";", ",").replace("]", "").replace("[", ""))
-        converted = []
-        for val in value_list:
-            converted.append(str_convert(val))
-
-        return converted
-    
-    elif value.startswith("'") and value.endswith("'"):
-        return str(value.replace("'", ""))
-
-    # Value is a valid number
-    elif value.count(".") != 0: #int(value) != 0 or value == "0":
-        return float(value)
-
-    return int(value)
-    
-def convert_to_str(value):
-    if type(value) == str:
-        return "'" + value + "'"
-
-    elif type(value) == list:
-        return str(value).replace(",", ";")
-
-    return str(value)
 
 # Reads a dictionary and returns a csv text
 # This function is mainly used on dicts that has dicts inside of it. Ex:
@@ -159,9 +119,9 @@ def dict_to_csv(data_dict: dict, header: list[str]=[]) -> str:
 
     for main_key in data_dict:
         dict = data_dict[main_key]
-        csv_line: str = convert_to_str(main_key)
+        csv_line: str = FileUtils.convert_to_str(main_key)
         for key in dict:
-            value_text = convert_to_str(dict[key])
+            value_text = FileUtils.convert_to_str(dict[key])
             
             csv_line += "," + value_text
         
@@ -187,7 +147,7 @@ def simple_dict_to_csv(data_dict: dict) -> str:
 
     for keyIdx in range(len(keys)):
         key = keys[keyIdx]
-        value = convert_to_str(data_dict[key])
+        value = FileUtils.convert_to_str(data_dict[key])
 
         csv_text += value
         if keyIdx < len(keys) - 1:

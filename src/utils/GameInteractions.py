@@ -41,7 +41,6 @@ def get_game_info(game_id: int, data_holder: DataHolder) -> dict:
     return data_holder.games_data[game_id]
 
 
-
 def check_bought(game_id, user_data: dict):
     user_library: list = user_data["library"]
     if user_library.count(game_id) != 0:
