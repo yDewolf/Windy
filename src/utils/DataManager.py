@@ -42,6 +42,8 @@ def load_csv(data_path: str) -> list[dict]:
 
     # Append line values to a dictionary using the header as keys
     for line in file:
+        if line == "\n":
+            continue
         line_dict = {}
         line_values = line.split(",")
 
@@ -74,6 +76,9 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
 
     # Append line values to a dictionary using the header as keys
     for line in file:
+        if line == "\n":
+            continue
+        
         line_dict = {}
         line_values = line.split(",")
 

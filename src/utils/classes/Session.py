@@ -66,9 +66,13 @@ class Session:
             
             return True
 
-        elif debug:
-            PrintFramework.custom_print(f"ERROR: Failed to log in", Colors.WARNING)
+        else:
+            
+            
+            if debug:
+                PrintFramework.custom_print(f"ERROR: Failed to log in", Colors.WARNING)
         
+        self.online = False
         return False
 
     def session_signout(self):

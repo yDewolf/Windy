@@ -2,10 +2,11 @@ import datetime
 
 def parse_string(value: str):
     if value.startswith("[") and value.endswith("]"):
-        value_list = list(value.replace(";", ",").replace("]", "").replace("[", ""))
+        value_list = (value.replace("]", "").replace("[", "")).split(";")
         converted = []
-        for val in value_list:
-            converted.append(parse_string(val))
+        if value_list != ['']:
+            for val in value_list:
+                converted.append(parse_string(val))
 
         return converted
     
