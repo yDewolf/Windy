@@ -31,6 +31,10 @@ class Session:
             self.update_logged_accounts(accounts_path)
 
             accounts = self.logged_accounts
+            if len(self.logged_accounts) == 0:
+                self.session_login("", "")
+                return
+
             username = list(enumerate(accounts))[self.config["last_logged_account"]][1]
             self.session_login(username, accounts[username]["password"])
             return
