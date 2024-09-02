@@ -20,9 +20,9 @@ default_logged_accounts_path: str = "session_data/logged_accounts.csv"
 default_session_cfg_path: str = "config/session_config.cfg"
 
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
+ApiLogin.sign_as_dev(0,'PhysicsForBreakfast',55411772869, 0, 'Andre Gomes', "nãosei", data_holder)
 
 current_session = Session.start_session(data_holder, default_logged_accounts_path, default_session_cfg_path)
-
 
 # Menu Callables
 

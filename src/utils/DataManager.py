@@ -1,4 +1,5 @@
 import utils.FileUtils as FileUtils
+#import FileUtils
 
 default_backup_path: str = "data/backup/"
 
@@ -34,45 +35,27 @@ def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, ba
 
 
 # Loads a .csv file
-def load_csv(data_path: str) -> list[dict]:
-    file = open(data_path, 'r')
-    header = file.readline().replace("\n", "").split(",")
-
-    values = []
-
-    # Append line values to a dictionary using the header as keys
-    for line in file:
-        if line == "\n":
-            continue
-        line_dict = {}
-        line_values = line.split(",")
-
-        for valueIdx in range(len(line_values)):
-            value = FileUtils.parse_string(line_values[valueIdx].replace("\n", ""))
-            line_dict[header[valueIdx]] = value
-        
-        values.append(line_dict)
-    
-    file.close()
-
-    return values
-
-def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
+def load_csv_columns(csv_path: str, columns: list[str]=[], use_main_key=False):
     file = open(csv_path, 'r')
     header = file.readline().replace("\n", "").split(",")
 
+
     target_columns = []
     for header_keyIdx in range(len(header)):
-        if columns.__contains__(header[header_keyIdx]):
+        if len(columns) > 0:
+            if columns.__contains__(header[header_keyIdx]):
+                target_columns.append(header_keyIdx)
+        else:
             target_columns.append(header_keyIdx)
 
 
-    values = []
+    values = {}
     main_keyIdx = 0
     if use_main_key:
         if len(target_columns) > 1:
             main_keyIdx = header.index(columns[0])
-        values = {}
+    else:
+        values = []
 
     # Append line values to a dictionary using the header as keys
     for line in file:
@@ -99,6 +82,36 @@ def load_csv_columns(csv_path: str, columns: list[str], use_main_key=True):
     file.close()
 
     return values
+
+def get_csv_columns(csv_path: str, columns: list[str]):
+    file = open(csv_path, 'r')
+    header = file.readline().replace("\n", "").split(",")
+
+    target_columns = []
+    for header_keyIdx in range(len(header)):
+        if columns.__contains__(header[header_keyIdx]):
+            target_columns.append(header_keyIdx)
+    
+    
+    values = {}
+    for key in columns:
+        values[key] = {}
+    
+    for line in file:
+        if line == "\n":
+            continue
+            
+        line = line.replace("\n", "")
+        line_values = line.split(",")
+        for valueIdx in target_columns:
+            value = FileUtils.parse_string(line_values[valueIdx])
+            
+            values[header[valueIdx]][value] = 1
+    
+    file.close()
+    return values
+    
+
 
 # Reads a dictionary and returns a csv text
 # This function is mainly used on dicts that has dicts inside of it. Ex:
@@ -159,3 +172,5 @@ def simple_dict_to_csv(data_dict: dict) -> str:
             csv_text += ","
         
     return csv_text
+
+

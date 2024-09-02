@@ -10,7 +10,7 @@ debug = True
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
-    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username", "password", "id", "library"])
+    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username", "password", "id", "library"], True)
 
     if users.get(username):
         if users[username]["password"] == password:
@@ -33,14 +33,12 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
 def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
     # Check if already has an user with the same username or email
     # Register user on database
-
-    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username"])
-    if users.get(username):
+    users_data = DataManager.get_csv_columns(data_holder.userdata_path, ["username", "email"])
+    if users_data["username"].get(username):
         PrintFramework.custom_print("User already exists", Colors.WARNING)
         return
-    
-    emails = DataManager.load_csv_columns(data_holder.userdata_path, ["email"])
-    if emails.get(email):
+
+    if users_data["email"].get(email):
         PrintFramework.custom_print("Email is already in use", Colors.WARNING)
         return
 
@@ -57,34 +55,27 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
 
 
 def sign_as_dev(user_id: int,  dev_name: str, cpf: int, cnpj: int, name: str, address: str, data_holder: DataHolder):
-    developers = DataManager.load_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"])
+    developers = DataManager.load_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"], True)
 
     if cpf == 0 and cnpj == 0:
         PrintFramework.custom_print("You can't leave CNPJ and CPF in blank, assign at least one of them", Colors.WARNING)
         return
 
-    # FIX ME
-    # Gostaria de não ter que ficar carregando o mesmo arquivo várias vezes só pra selecionar uma chave específica como principal
-    # A outra forma que eu pensei foi fazer um loop no developers para checar cada um se for igual à o cpf, por exemplo.
-    # Ainda assim é uma forma muito ruim de fazer isso
-    # Querendo ou não, abrir arquivos assim é desperdício de memória e tempo, já que todas as informações estão em developers
-    cpfs = DataManager.load_csv_columns(data_holder.devdata_path, ["cpf"])
-    cnpjs = DataManager.load_csv_columns(data_holder.devdata_path, ["cnpj"])
-    dev_names = DataManager.load_csv_columns(data_holder.devdata_path, ["dev_name"])
+    developers_data = DataManager.get_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"])
 
     # Testing for duplicated info
-    if developers.get(user_id):
+    if developers_data["id"].get(user_id):
         PrintFramework.custom_print("You are already registered as a developer", Colors.WARNING)
         return
-    elif cpfs.get(cpf) and cpf != 0:
+    elif developers_data["cpf"].get(cpf) and cpf != 0:
         PrintFramework.custom_print("This CPF is already registered as a developer", Colors.WARNING)
         PrintFramework.custom_print("If you are the owner of this CPF and didn't register it, please look for a police department to report it")
         return
-    elif cnpjs.get(cnpj) and cnpj != 0:
+    elif developers_data["cnpj"].get(cnpj) and cnpj != 0:
         PrintFramework.custom_print("This CNPJ is already registered", Colors.WARNING)
         PrintFramework.custom_print("If you are the owner of this CNPJ and didn't register it, please look for a police department to report it")
         return
-    elif dev_names.get(dev_name):
+    elif developers_data["dev_name"].get(dev_name):
         PrintFramework.custom_print("This developer name is already in use, try another", Colors.WARNING)
         return
     
