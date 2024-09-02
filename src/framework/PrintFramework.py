@@ -1,4 +1,7 @@
 import enum
+import os
+
+os.system('')
 
 class Colors(enum.Enum):
     HEADER = "\033[95m"
