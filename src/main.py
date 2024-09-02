@@ -39,7 +39,7 @@ def login_menu():
 
         
         # If not selected Log in Previous Accounts
-        if not MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
+        if MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
             return
         
         
