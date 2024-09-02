@@ -35,7 +35,7 @@ def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, ba
 
 
 # Loads a .csv file
-def load_csv_columns(csv_path: str, columns: list[str]=[], use_main_key=False):
+def load_csv(csv_path: str, columns: list[str]=[], use_main_key=False):
     file = open(csv_path, 'r')
     header = file.readline().replace("\n", "").split(",")
 

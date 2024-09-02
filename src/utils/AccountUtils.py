@@ -10,7 +10,7 @@ debug = True
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
-    users = DataManager.load_csv_columns(data_holder.userdata_path, ["username", "password", "id", "library"], True)
+    users = DataManager.load_csv(data_holder.userdata_path, ["username", "password", "id", "library"], True)
 
     if users.get(username):
         if users[username]["password"] == password:
@@ -55,7 +55,7 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
 
 
 def sign_as_dev(user_id: int,  dev_name: str, cpf: int, cnpj: int, name: str, address: str, data_holder: DataHolder):
-    developers = DataManager.load_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"], True)
+    developers = DataManager.load_csv(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"], True)
 
     if cpf == 0 and cnpj == 0:
         PrintFramework.custom_print("You can't leave CNPJ and CPF in blank, assign at least one of them", Colors.WARNING)
