@@ -1,4 +1,5 @@
 import datetime
+import os
 
 def parse_string(value: str):
     if value.startswith("[") and value.endswith("]"):
@@ -38,6 +39,10 @@ def convert_to_str(value):
 def backup_file(file_path: str, backup_path: str):
     file_name = file_path.split("/")[-1] # Get file name from the file path
 
+    # Certify that the backup path exists
+    if not os.path.isdir(backup_path):
+        os.mkdir(backup_path)
+    
     # Add file format + create a new file
     backup_file = open(backup_path + file_name.split(".")[0] + "_" + (datetime.datetime.now()).strftime("%d%m%Y_%H-%M-%S") + "." + file_name.split(".")[-1], "w")
     
