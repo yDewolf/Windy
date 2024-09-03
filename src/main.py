@@ -117,7 +117,7 @@ def game_catalog_menu():
         PrintFramework.custom_print(f"\n--- {game_info["name"]} --- Already Owned: {game_status}", Colors.HEADER)
         PrintFramework.custom_print(f"{game_info["description"]}", Colors.CYAN)
         PrintFramework.custom_print(f"Game price: {game_info["price"]}", Colors.WARNING, False)
-        print(f" | Select Purchase game and then type: {gameId}, to buy {game_info["name"]}")
+        print(f"[{gameId}]-buy {game_info["name"]}")
 
         buy_options.append(gameId)
     
@@ -248,7 +248,6 @@ def publish_game_menu():
     price = float(input())
 
     GameInteractions.publish_game(game_name, game_description, price, current_session.user_data, data_holder)
-
 
 # Menu Conditions
 

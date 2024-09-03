@@ -51,6 +51,7 @@ class Session:
 
     def update_last_logged(self, last_idx: int):
         self.config["last_logged_account"] = last_idx
+        self.config["auto_login"] = True
         CfgReader.write_cfg_file(self.cfg_path, self.config)
 
 

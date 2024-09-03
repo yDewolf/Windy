@@ -13,7 +13,7 @@ def option_menu(options: list[dict], option_0: str="Quit"):
         possible_options.append(option)
     
     for menuIdx in range(len(possible_options)):
-        print(f"{menuIdx + 1}-{possible_options[menuIdx]["name"]}")
+        print(f"[{menuIdx + 1}]-{possible_options[menuIdx]["name"]}")
     
     print(f"0-{option_0}")
 
