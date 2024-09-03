@@ -29,6 +29,5 @@ def option_menu(options: list[dict], option_0: str="Quit"):
 
     if possible_options[input_char - 1].get("callable"):
         possible_options[input_char - 1]["callable"]()
-        return
     
     return input_char

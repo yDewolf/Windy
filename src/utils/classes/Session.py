@@ -80,8 +80,16 @@ class Session:
         return False
 
     def session_signout(self):
+        self.logged_accounts.pop(self.user_data["username"])
+        DataManager.overwrite_data(self.logged_accounts, self.config["accounts_path"])
+
         self.user_data = {}
         self.online = False
+        self.config["auto_login"] = False
+
+    def save_cfg(self):
+        PrintFramework.custom_print("Saving session config", Colors.CYAN)
+        CfgReader.write_cfg_file(self.cfg_path, self.config)
 
 
 def start_session(data_holder, accounts_path: str="", cfg_path: str="") -> Session:

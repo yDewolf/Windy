@@ -16,7 +16,9 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
         if users[username]["password"] == password:
             PrintFramework.custom_print(f"Logged in succesfully as {username}", Colors.GREEN)
 
-            return users[username]
+            user_data = users[username]
+            user_data["username"] = username
+            return user_data
         else:
             PrintFramework.custom_print(f"\nIncorrect Password", Colors.WARNING)
             return {}

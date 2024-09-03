@@ -8,30 +8,28 @@ def overwrite_data(data: dict, data_path: str, backup: bool=True, backup_path: s
     if backup:
         FileUtils.backup_file(data_path, backup_path)
 
-    file = open(data_path, "r")
-    header = file.readline().replace("\n", "").split(",")
+    csv_text = ""
+    with open(data_path, "r") as file:
+        header = file.readline().replace("\n", "").split(",")
 
-    csv_text = dict_to_csv(data, header)
+        csv_text = dict_to_csv(data, header)
 
-    file.close()
-    file = open(data_path, "w")
-
-    file.write(csv_text)
-    file.close()
+    with open(data_path, "w") as file:
+        file.write(csv_text)
 
 # Adds to the last line or to a new line (new_line) the values in a dictionary (data)
 # Can backup or not the .csv file
 def append_data(data: dict, data_path: str, new_line=True, backup: bool=True, backup_path: str=default_backup_path):
-    file = open(data_path, "a")
-    if backup:
-        FileUtils.backup_file(data_path, backup_path)
+    with open(data_path, "a+") as file:
+        if backup:
+            FileUtils.backup_file(data_path, backup_path)
     
-    csv_text = simple_dict_to_csv(data)
-    if new_line:
-        file.write("\n")
-    
-    file.write(csv_text)
-    file.close()
+        csv_text = simple_dict_to_csv(data)
+        if new_line:
+            file.write("\n")
+        
+        file.write(csv_text)
+        #file.close()
 
 
 # Loads a .csv file
@@ -145,8 +143,10 @@ def dict_to_csv(data_dict: dict, header: list[str]=[]) -> str:
         
         lines.append(csv_line)
     
-    for line in lines:
-        csv_text += line + "\n"
+    for idx, line in enumerate(lines):
+        csv_text += line
+        if idx < len(lines) - 1:
+            csv_text += "\n"
     
     return csv_text
 

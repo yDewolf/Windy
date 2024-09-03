@@ -20,7 +20,6 @@ default_logged_accounts_path: str = "session_data/logged_accounts.csv"
 default_session_cfg_path: str = "config/session_config.cfg"
 
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
-ApiLogin.sign_as_dev(0,'PhysicsForBreakfast',55411772869, 0, 'Andre Gomes', "nãosei", data_holder)
 
 current_session = Session.start_session(data_holder, default_logged_accounts_path, default_session_cfg_path)
 
@@ -46,7 +45,7 @@ def login_menu():
         accounts = current_session.logged_accounts
         account_list = []
         for username in accounts:
-            PrintFramework.custom_print(f"To log in as {Colors.CYAN.value}{username}{Colors.ENDC.value}{Colors.HEADER.value}, type {len(account_list)}", Colors.HEADER)
+            PrintFramework.custom_print(f"To log in as {Colors.CYAN.value}{username}{Colors.ENDC.value}{Colors.HEADER.value}, type {Colors.GREEN.value}{len(account_list)}", Colors.HEADER)
             account_list.append(username)
         
 
@@ -83,6 +82,12 @@ def sign_in_menu():
     if current_session.session_login(username, password):
         remember_account(username, password)
 
+def sign_out_menu():
+    if MenuManager.option_menu([{"name": "Main Menu"}], "I'm sure I want to sign out"):
+        return
+
+    current_session.session_signout()
+    PrintFramework.custom_print("Signed out succesfully | You are now offline", Colors.GREEN)
 
 def remember_account(username, password):
     remember = -1
@@ -98,14 +103,6 @@ def remember_account(username, password):
         DataManager.append_data({"username": username, "password": password}, default_logged_accounts_path)
         current_session.update_last_logged(-1)
 
-
-
-def sign_out_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "I'm sure I want to sign out"):
-        return
-
-    current_session.session_signout()
-    PrintFramework.custom_print("Signed out succesfully | You are now offline", Colors.GREEN)
 
 
 def game_catalog_menu():
@@ -229,6 +226,29 @@ def be_a_developer_menu():
     
     PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
 
+def publish_game_menu():
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
+        return
+
+    print("-----------")
+    PrintFramework.custom_print("Publishing games: ", Colors.HEADER)
+    print("To publish a game you need to fill these information about your game:")
+    PrintFramework.custom_print("- Its name;\n- A description of it;\n- Its price", Colors.CYAN)
+    PrintFramework.custom_print("\nDo you want to publish a game?", Colors.WARNING)
+    if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}No{Colors.ENDC.value}"}], f"{Colors.GREEN.value}Yes{Colors.ENDC.value}"):
+        return
+    
+    PrintFramework.custom_print("What is the name of your game?", Colors.CYAN)
+    game_name = input()
+
+    PrintFramework.custom_print("Give your game a cool description", Colors.CYAN)
+    game_description = input()
+
+    PrintFramework.custom_print("How much your game will cost? (R$)", Colors.CYAN)
+    price = float(input())
+
+    GameInteractions.publish_game(game_name, game_description, price, current_session.user_data, data_holder)
+
 
 # Menu Conditions
 
@@ -243,6 +263,11 @@ def is_online():
 def is_offline():
     return not is_online()
 
+def is_developer():
+    if is_online():
+        return current_session.is_developer
+
+    return False
 
 # Menu Indexing
 menus = [
@@ -273,6 +298,11 @@ menus = [
         "callable": game_catalog_menu
     },
     {
+        "name": "Publish Games",
+        "condition": is_developer,
+        "callable": publish_game_menu
+    },
+    {
         "name": "Account Settings",
         "condition": is_online,
         "callable": account_settings_menu
@@ -282,4 +312,5 @@ menus = [
 
 while True:
     if main_menu() == 0:
+        current_session.save_cfg()
         break

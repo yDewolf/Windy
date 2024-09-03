@@ -15,12 +15,21 @@ def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     DataManager.overwrite_data(data_holder.users_data, data_holder.userdata_path)
 
 # Inserts a new game on the games data / csv
-def publish_game(game_info: dict, data_holder: DataHolder):
+def publish_game(name: str, description: str, price: float, user_data: dict, data_holder: DataHolder):
     # Add new game to the database
     game_id = random.randrange(0, 65535)
-    game_info["id"] = game_id
+    #game_info["id"] = game_id
 
+    game_info = {
+        "id": game_id,
+        "name": name,
+        "description": description,
+        "developer": user_data["id"],
+        "publisher": user_data["id"],
+        "price": price
+    }
     data_holder.games_data[game_id] = game_info
+    DataManager.append_data(game_info, data_holder.gamedata_path)
 
 # Returns all games listed on the DataHolder
 def get_games(data_holder: DataHolder) -> list:
