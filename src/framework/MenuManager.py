@@ -1,8 +1,19 @@
 from framework.PrintFramework import custom_print
 from framework.PrintFramework import Colors
 
-def option_menu(options: list[dict], option_0: str="Quit"):
-    print(f"\nNavigate by typing one of the options: ")
+console_size = 50
+
+def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""):
+    if title == "":
+        title = "Navigate by typing one of the options:"
+    if subtitle == "":
+        subtitle = "Select one the options below:"
+    
+    if title != " ":
+        print(f"\n {title.center(console_size, " ")} ")
+    if subtitle != " ":
+        print(f" {subtitle.center(console_size, " ")} ")
+    
     possible_options = []
 
     for option in options:
@@ -15,7 +26,7 @@ def option_menu(options: list[dict], option_0: str="Quit"):
     for menuIdx in range(len(possible_options)):
         print(f"[{menuIdx + 1}]-{possible_options[menuIdx]["name"]}")
     
-    print(f"0-{option_0}")
+    print(f"[0]-{option_0}")
 
     input_char = -1
     while input_char < 0 or input_char > len(possible_options):    

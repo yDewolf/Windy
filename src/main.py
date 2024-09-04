@@ -26,11 +26,11 @@ current_session = Session.start_session(data_holder, default_logged_accounts_pat
 # Menu Callables
 
 def main_menu():
-    return MenuManager.option_menu(menus)
+    return MenuManager.option_menu(menus, "Quit", f"{Colors.HEADER.value}Main Menu{Colors.ENDC.value}")
 
 
 def login_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER.value}Login Menu{Colors.ENDC.value}"):
         return
 
     if len(current_session.logged_accounts) != 0:
@@ -72,7 +72,7 @@ def login_new_account():
 
 
 def sign_in_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER.value}Sign in{Colors.ENDC.value}"):
         return
 
     username = input("Username: ")
@@ -83,7 +83,7 @@ def sign_in_menu():
         remember_account(username, password)
 
 def sign_out_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "I'm sure I want to sign out"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "I'm sure I want to sign out", f"{Colors.HEADER.value}Sign out Menu{Colors.ENDC.value}"):
         return
 
     current_session.session_signout()
@@ -106,8 +106,8 @@ def remember_account(username, password):
 
 
 def game_catalog_menu():
-    print("-----------------------")
-    print("Games in Catalog:")
+    print(f"{"-" * MenuManager.console_size}")
+    PrintFramework.custom_print("Games in Catalog:", Colors.HEADER)
 
     buy_options: list[int] = []
     for gameId in data_holder.games_data:
@@ -116,16 +116,16 @@ def game_catalog_menu():
 
         PrintFramework.custom_print(f"\n--- {game_info["name"]} --- Already Owned: {game_status}", Colors.HEADER)
         PrintFramework.custom_print(f"{game_info["description"]}", Colors.CYAN)
-        PrintFramework.custom_print(f"Game price: {game_info["price"]}", Colors.WARNING, False)
-        print(f"[{gameId}]-buy {game_info["name"]}")
+        PrintFramework.custom_print(f"Game price: {game_info["price"]}", Colors.WARNING)
+        print(f"{Colors.CYAN.value}[{gameId}]{Colors.ENDC.value}-buy {Colors.HEADER.value}{game_info["name"]}{Colors.ENDC.value}")
 
         buy_options.append(gameId)
     
-    print("\n-----------------------\n")
+    print(f"\n{"-" * MenuManager.console_size}\n")
 
     game_id = -1
     while not data_holder.games_data.get(game_id) or GameInteractions.check_bought(game_id, current_session.user_data):
-        if not MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu"):
+        if not MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu", " ", ""):
             return
 
         game_id = int(input("Type the game id to purchase it: "))
@@ -152,7 +152,7 @@ def game_catalog_menu():
 
 def library_menu():
     print("-----------------------")
-    print("Games in Library:")
+    PrintFramework.custom_print("Games in Library:", Colors.HEADER)
 
     for gameId in current_session.user_data["library"]:
         game_info = data_holder.games_data[gameId]
@@ -161,7 +161,7 @@ def library_menu():
     
     print("-----------------------")
 
-    MenuManager.option_menu([{"name": "Main Menu"}], "Do nothing")
+    MenuManager.option_menu([{"name": "Main Menu"}], "Do nothing", "", " ")
 
 
 def account_settings_menu():
@@ -171,7 +171,7 @@ def account_settings_menu():
         }
     ]
 
-    menu_idx = MenuManager.option_menu(settings, "Quit")
+    menu_idx = MenuManager.option_menu(settings, "Go back to Main Menu", "", " ")
     match menu_idx:
         case 0:
             return
@@ -191,7 +191,7 @@ def be_a_developer_menu():
     sign_in_error = 0
     while not sign_in_error:
         PrintFramework.custom_print("\nDo you want to proceed to be a Developer?", Colors.WARNING)
-        if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}"):
+        if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}", " ", " "):
             return
 
         print("Please fill the fields with your info")
@@ -227,7 +227,7 @@ def be_a_developer_menu():
     PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
 
 def publish_game_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER.value}Publish Game Menu{Colors.ENDC.value}"):
         return
 
     print("-----------")
@@ -235,7 +235,7 @@ def publish_game_menu():
     print("To publish a game you need to fill these information about your game:")
     PrintFramework.custom_print("- Its name;\n- A description of it;\n- Its price", Colors.CYAN)
     PrintFramework.custom_print("\nDo you want to publish a game?", Colors.WARNING)
-    if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}No{Colors.ENDC.value}"}], f"{Colors.GREEN.value}Yes{Colors.ENDC.value}"):
+    if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}No{Colors.ENDC.value}"}], f"{Colors.GREEN.value}Yes{Colors.ENDC.value}", ""):
         return
     
     PrintFramework.custom_print("What is the name of your game?", Colors.CYAN)
@@ -248,6 +248,8 @@ def publish_game_menu():
     price = float(input())
 
     GameInteractions.publish_game(game_name, game_description, price, current_session.user_data, data_holder)
+
+    PrintFramework.custom_print("Your game was published successfully!", Colors.GREEN)
 
 # Menu Conditions
 
