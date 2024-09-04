@@ -34,22 +34,28 @@ def login_menu():
         return
 
     if len(current_session.logged_accounts) != 0:
-        PrintFramework.custom_print(f"You have logged accounts: ", Colors.HEADER)
+        menu_lines = []
 
+        menu_lines.append(f"You have logged accounts:")
         
         # If not selected Log in Previous Accounts
         if MenuManager.option_menu([{"name": "Log in another account", "callable": login_new_account}], "Log in previous accounts"):
             return
         
-        
+        menu_lines.append(" ")
+
         accounts = current_session.logged_accounts
         account_list = []
         for username in accounts:
-            PrintFramework.custom_print(f"To log in as {Colors.CYAN.value}{username}{Colors.ENDC.value}{Colors.HEADER.value}, type {Colors.GREEN.value}{len(account_list)}", Colors.HEADER)
+            menu_lines.append(f"To log in as {username}, type {len(account_list)}")
             account_list.append(username)
         
+        menu_lines.append(" ")
+        menu_lines.append("Type the account number to log in")
+        MenuManager.generate_menu_ui(menu_lines, MenuManager.console_size, [0, len(menu_lines) -1])
+        menu_lines = []
 
-        PrintFramework.custom_print("Type the account number to log in", Colors.ENDC)
+
         account_number = -1
         while account_number < 0 or account_number > len(account_list):
             account_number = int(input())
