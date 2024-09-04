@@ -1,18 +1,11 @@
-#from framework.PrintFramework import custom_print
-#from framework.PrintFramework import Colors
+from framework.PrintFramework import custom_print
+from framework.PrintFramework import Colors
 
-from PrintFramework import custom_print
-from PrintFramework import Colors
+#from PrintFramework import custom_print
+# from PrintFramework import Colors
 
 console_size = 50
 
-# Class Menu:
-# The menu class will be generate in this order:
-# 1. Title
-# 2. Subtitle
-# 3. All text
-# 4. All forms
-#
 # Forms:
 # - Can have a title
 # - Receives the input type (int, float, str)
@@ -20,7 +13,7 @@ console_size = 50
 # - Receives a callable
 # - Returns the inputted value to the callable
 
-class Form():
+class Form:
     title: str
     options: list[str]
     form_callable: callable
@@ -49,6 +42,13 @@ class Form():
                 custom_print("Invalid option!", Colors.WARNING)
 
         self.form_callable(inputted)
+
+# Class Menu:
+# The menu class will be generated in this order:
+# 1. Title
+# 2. Subtitle
+# 3. All text
+# 4. All forms
 
 class Menu:
     title: str
@@ -142,16 +142,16 @@ def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_li
         print(f"+{"-" * width}+")
 
 
-def test_form_callable(inpputed_idx: int):
-    match inpputed_idx:
-        case 1:
-            print("This is the first option")
-        case 2:
-            print("This is the second option")
-        case 0:
-            return
+# def test_form_callable(inpputed_idx: int):
+#     match inpputed_idx:
+#         case 1:
+#             print("This is the first option")
+#         case 2:
+#             print("This is the second option")
+#         case 0:
+#             return
 
-test_form = Form("This is a test form:", ["Option 1", "Option 2", "Option 3", ], test_form_callable)
+# test_form = Form("This is a test form:", ["Option 1", "Option 2", "Option 3", ], test_form_callable)
 
-test_menu = Menu("This is a test menu", "Made for testing the new menu system!", ["The form below has 4 options!"], [test_form])
-test_menu.create()
+# test_menu = Menu("This is a test menu", "Made for testing the new menu system!", ["The form below has 4 options!"], [test_form])
+# test_menu.create()
