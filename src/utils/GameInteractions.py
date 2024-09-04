@@ -1,6 +1,6 @@
 import random
 from utils.classes.DataHolder import DataHolder
-import utils.DataManager as DataManager
+import utils.CsvReader as CsvReader
 
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
@@ -12,7 +12,7 @@ def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
 
     user_data["library"].append(game_id)
     data_holder.users_data[user_data["id"]]["library"].append(game_id)
-    DataManager.overwrite_data(data_holder.users_data, data_holder.userdata_path)
+    CsvReader.overwrite_data(data_holder.users_data, data_holder.userdata_path)
 
 # Inserts a new game on the games data / csv
 def publish_game(name: str, description: str, price: float, user_data: dict, data_holder: DataHolder):
@@ -29,7 +29,7 @@ def publish_game(name: str, description: str, price: float, user_data: dict, dat
         "price": price
     }
     data_holder.games_data[game_id] = game_info
-    DataManager.append_data(game_info, data_holder.gamedata_path)
+    CsvReader.append_data(game_info, data_holder.gamedata_path)
 
 # Returns all games listed on the DataHolder
 def get_games(data_holder: DataHolder) -> list:

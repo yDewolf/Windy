@@ -1,6 +1,6 @@
 import random
 from utils.classes.DataHolder import DataHolder
-import utils.DataManager as DataManager
+import utils.CsvReader as CsvReader
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
 
@@ -10,7 +10,7 @@ debug = True
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # Check on database if username and password matches
     # User data collected from the database
-    users = DataManager.load_csv(data_holder.userdata_path, ["username", "password", "id", "library"], True)
+    users = CsvReader.load_csv(data_holder.userdata_path, ["username", "password", "id", "library"], True)
 
     if users.get(username):
         if users[username]["password"] == password:
@@ -35,7 +35,7 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
 def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
     # Check if already has an user with the same username or email
     # Register user on database
-    users_data = DataManager.get_csv_columns(data_holder.userdata_path, ["username", "email"])
+    users_data = CsvReader.get_csv_columns(data_holder.userdata_path, ["username", "email"])
     if users_data["username"].get(username):
         PrintFramework.custom_print("User already exists", Colors.WARNING)
         return
@@ -53,17 +53,17 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
     }
 
     data_holder.users_data[user_data["id"]] = user_data
-    DataManager.append_data(user_data, data_holder.userdata_path)
+    CsvReader.append_data(user_data, data_holder.userdata_path)
 
 
 def sign_as_dev(user_id: int,  dev_name: str, cpf: int, cnpj: int, name: str, address: str, data_holder: DataHolder):
-    developers = DataManager.load_csv(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"], True)
+    developers = CsvReader.load_csv(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"], True)
 
     if cpf == 0 and cnpj == 0:
         PrintFramework.custom_print("You can't leave CNPJ and CPF in blank, assign at least one of them", Colors.WARNING)
         return
 
-    developers_data = DataManager.get_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"])
+    developers_data = CsvReader.get_csv_columns(data_holder.devdata_path, ["id", "dev_name", "cpf", "cnpj"])
 
     # Testing for duplicated info
     if developers_data["id"].get(user_id):
@@ -91,5 +91,5 @@ def sign_as_dev(user_id: int,  dev_name: str, cpf: int, cnpj: int, name: str, ad
         "published_games": []
     }
 
-    DataManager.append_data(dev_data, data_holder.devdata_path)
+    CsvReader.append_data(dev_data, data_holder.devdata_path)
     return True

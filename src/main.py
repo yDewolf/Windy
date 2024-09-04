@@ -1,5 +1,5 @@
 import utils.AccountUtils as ApiLogin
-import utils.DataManager as DataManager
+import utils.CsvReader as CsvReader
 
 import utils.classes.Session as Session
 from utils.classes.DataHolder import DataHolder
@@ -106,7 +106,7 @@ def remember_account(username, password):
             PrintFramework.custom_print("Invalid option", Colors.WARNING)
     
     if remember:
-        DataManager.append_data({"username": username, "password": password}, default_logged_accounts_path)
+        CsvReader.append_data({"username": username, "password": password}, default_logged_accounts_path)
         current_session.update_last_logged(-1)
 
 

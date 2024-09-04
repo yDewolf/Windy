@@ -1,4 +1,4 @@
-from utils.DataManager import load_csv
+from utils.CsvReader import load_csv
 from framework.PrintFramework import Colors
 import framework.PrintFramework as PrintFramework
 

@@ -3,7 +3,7 @@ from utils.classes.DataHolder import DataHolder
 from framework.PrintFramework import Colors
 import framework.PrintFramework as PrintFramework
 
-import utils.DataManager as DataManager
+import utils.CsvReader as CsvReader
 import utils.ConfigReader as CfgReader
 
 debug = False
@@ -47,7 +47,7 @@ class Session:
         self.online = False
 
     def update_logged_accounts(self, accounts_path: str):
-        self.logged_accounts = DataManager.load_csv(accounts_path, ["username", "password"], True)
+        self.logged_accounts = CsvReader.load_csv(accounts_path, ["username", "password"], True)
 
     def update_last_logged(self, last_idx: int):
         self.config["last_logged_account"] = last_idx
@@ -61,7 +61,7 @@ class Session:
             self.user_data = error
             self.online = True
 
-            developers = DataManager.load_csv(self.data_holder.devdata_path, ["id", "dev_name"], True)
+            developers = CsvReader.load_csv(self.data_holder.devdata_path, ["id", "dev_name"], True)
             self.is_developer = False
             if developers.get(self.user_data["id"]):
                 self.is_developer = True
@@ -82,7 +82,7 @@ class Session:
 
     def session_signout(self):
         self.logged_accounts.pop(self.user_data["username"])
-        DataManager.overwrite_data(self.logged_accounts, self.config["accounts_path"])
+        CsvReader.overwrite_data(self.logged_accounts, self.config["accounts_path"])
 
         self.user_data = {}
         self.online = False
