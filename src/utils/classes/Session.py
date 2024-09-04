@@ -28,7 +28,7 @@ class Session:
         self.config = CfgReader.read_cfg_file(cfg_path)
 
         if self.config["auto_login"]:
-            self.update_logged_accounts(accounts_path)
+            self.get_logged_accounts(accounts_path)
 
             accounts = self.logged_accounts
             if len(self.logged_accounts) == 0:
@@ -40,14 +40,15 @@ class Session:
             return
 
         if accounts_path != "":
-            self.update_logged_accounts(accounts_path)
+            self.get_logged_accounts(accounts_path)
 
         self.session_id = -1
         self.user_data = {}
         self.online = False
 
-    def update_logged_accounts(self, accounts_path: str):
+    def get_logged_accounts(self, accounts_path: str):
         self.logged_accounts = CsvReader.load_csv(accounts_path, ["username", "password"], True)
+        return self.logged_accounts
 
     def update_last_logged(self, last_idx: int):
         self.config["last_logged_account"] = last_idx
@@ -70,10 +71,11 @@ class Session:
                 PrintFramework.custom_print("Logged as a developer", Colors.GREEN)
             
             return True
-
         else:
-            
-            
+            if self.logged_accounts.get(username):
+                self.logged_accounts.pop(username)
+                CsvReader.overwrite_data(self.logged_accounts, self.config["accounts_path"])
+
             if debug:
                 PrintFramework.custom_print(f"ERROR: Failed to log in", Colors.WARNING)
         

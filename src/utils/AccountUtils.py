@@ -93,3 +93,16 @@ def sign_as_dev(user_id: int,  dev_name: str, cpf: int, cnpj: int, name: str, ad
 
     CsvReader.append_data(dev_data, data_holder.devdata_path)
     return True
+
+def delete_account(user_id: int, username: str, password: str, data_holder: DataHolder):
+    user_data = data_holder.users_data[user_id]
+    if not username == user_data["username"]:
+        PrintFramework.custom_print("Incorrect username", Colors.WARNING)
+        return
+        
+    if not password == user_data["password"]:
+        PrintFramework.custom_print("Incorrect password", Colors.WARNING)
+        return
+
+    data_holder.users_data.pop(user_id)
+    CsvReader.overwrite_data(data_holder.users_data, data_holder.userdata_path)

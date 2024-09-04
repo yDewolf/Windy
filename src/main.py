@@ -174,15 +174,39 @@ def account_settings_menu():
     settings = [
         {
             "name": "Be a developer",
+            "callable": be_a_developer_menu
+        },
+        {
+            "name": "Delete my account",
+            "callable": delete_account_menu
         }
     ]
 
-    menu_idx = MenuManager.option_menu(settings, "Go back to Main Menu", "", " ")
-    match menu_idx:
-        case 0:
-            return
-        case 1:
-            be_a_developer_menu()
+    MenuManager.option_menu(settings, "Go back to Main Menu", "", " ")
+    # match menu_idx:
+    #     case 0:
+    #         return
+    #     case 1:
+    #         be_a_developer_menu()
+
+def delete_account_menu():
+    PrintFramework.custom_print("Do you want to delete your account?", Colors.HEADER)
+    PrintFramework.custom_print("This action can't be undone", Colors.WARNING)
+
+    if not MenuManager.option_menu([{"name": "Go back to Main Menu"}], "Proceed to delete my account", "", " "):
+        PrintFramework.custom_print(f"Type your username ({current_session.user_data["username"]}) to agree with the following statement", Colors.HEADER)
+        PrintFramework.custom_print("I know that I'm deleting my account forever and this action cannot be undone:", Colors.WARNING)
+        username = input()
+        
+        PrintFramework.custom_print("Type your password to confirm your action", Colors.HEADER)
+        password = input()
+
+        PrintFramework.custom_print("Are you sure you want to delete your account?", Colors.WARNING)
+
+        if not MenuManager.option_menu([{"name": "I changed my mind"}], "I really want to delete my account", " ", " "):
+            AccountUtils.delete_account(current_session.user_data["id"], username, password, data_holder)
+            current_session.session_signout()
+
 
 def be_a_developer_menu():
     PrintFramework.custom_print("Do you want to enter the Developers Project?", Colors.HEADER)
