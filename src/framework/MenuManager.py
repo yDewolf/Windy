@@ -1,5 +1,8 @@
-from framework.PrintFramework import custom_print
-from framework.PrintFramework import Colors
+#from framework.PrintFramework import custom_print
+#from framework.PrintFramework import Colors
+
+from PrintFramework import custom_print
+from PrintFramework import Colors
 
 console_size = 50
 
@@ -17,11 +20,64 @@ console_size = 50
 # - Receives a callable
 # - Returns the inputted value to the callable
 
+class Form():
+    title: str
+    options: list[str]
+    form_callable: callable
+
+    def __init__(self, title: str, options: list[str], form_callable) -> None:
+        self.title = title
+        self.options = options
+        self.form_callable = form_callable
+    
+    def run(self):
+        form_lines: list[str] = []
+        centered_lines: list[int] = []
+        if self.title != "":
+            form_lines.append(self.title)
+            centered_lines.append(len(centered_lines))
+
+        for idx, option in enumerate(self.options):
+            form_lines.append(f"[{idx}]-{option}")
+
+        generate_menu_ui(form_lines, console_size, centered_lines)
+
+        inputted = -1
+        while inputted < 0 or inputted > len(self.options):
+            inputted = int(input())
+            if inputted < 0 or inputted > len(self.options):
+                custom_print("Invalid option!", Colors.WARNING)
+
+        self.form_callable(inputted)
+
 class Menu:
     title: str
     subtitle: str
     text: list[str]
     forms: list
+
+    def __init__(self, title: str, subtitle: str, text: list[str], forms: list[Form]) -> None:
+        self.title = title
+        self.subtitle = subtitle
+        self.text = text
+        self.forms = forms
+
+    def create(self):
+        menu_text: list[str] = []
+        centered_lines = []
+        if self.title != "":
+            menu_text.append(self.title)
+            centered_lines.append(len(centered_lines))
+        if self.subtitle != "":
+            menu_text.append(self.subtitle)
+            centered_lines.append(len(centered_lines))
+        
+        generate_menu_ui(menu_text, console_size, centered_lines)
+
+        for form in self.forms:
+            form.run()
+
+
 
 def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""):
     menu_lines = []
@@ -85,3 +141,17 @@ def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_li
     if bottom:
         print(f"+{"-" * width}+")
 
+
+def test_form_callable(inpputed_idx: int):
+    match inpputed_idx:
+        case 1:
+            print("This is the first option")
+        case 2:
+            print("This is the second option")
+        case 0:
+            return
+
+test_form = Form("This is a test form:", ["Option 1", "Option 2", "Option 3", ], test_form_callable)
+
+test_menu = Menu("This is a test menu", "Made for testing the new menu system!", ["The form below has 4 options!"], [test_form])
+test_menu.create()
