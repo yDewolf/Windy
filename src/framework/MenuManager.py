@@ -3,6 +3,26 @@ from framework.PrintFramework import Colors
 
 console_size = 50
 
+# Class Menu:
+# The menu class will be generate in this order:
+# 1. Title
+# 2. Subtitle
+# 3. All text
+# 4. All forms
+#
+# Forms:
+# - Can have a title
+# - Receives the input type (int, float, str)
+# - Receives a range of possible options (list[str], list[int])
+# - Receives a callable
+# - Returns the inputted value to the callable
+
+class Menu:
+    title: str
+    subtitle: str
+    text: list[str]
+    forms: list
+
 def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""):
     menu_lines = []
     centered_lines = []
@@ -64,3 +84,4 @@ def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_li
     
     if bottom:
         print(f"+{"-" * width}+")
+
