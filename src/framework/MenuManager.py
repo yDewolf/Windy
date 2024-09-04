@@ -4,15 +4,20 @@ from framework.PrintFramework import Colors
 console_size = 50
 
 def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""):
+    menu_lines = []
+    centered_lines = []
+    
     if title == "":
         title = "Navigate by typing one of the options:"
     if subtitle == "":
         subtitle = "Select one the options below:"
-    
+
     if title != " ":
-        print(f"\n {title.center(console_size, " ")} ")
+        menu_lines.append(f"{title}")
+        centered_lines.append(len(centered_lines))
     if subtitle != " ":
-        print(f" {subtitle.center(console_size, " ")} ")
+        menu_lines.append(f"{subtitle}")
+        centered_lines.append(len(centered_lines))
     
     possible_options = []
 
@@ -24,9 +29,11 @@ def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""
         possible_options.append(option)
     
     for menuIdx in range(len(possible_options)):
-        print(f"[{menuIdx + 1}]-{possible_options[menuIdx]["name"]}")
+        menu_lines.append(f"[{menuIdx + 1}]-{possible_options[menuIdx]["name"]}")
     
-    print(f"[0]-{option_0}")
+    menu_lines.append(f"[0]-{option_0}")
+
+    generate_menu_ui(menu_lines, console_size, centered_lines)
 
     input_char = -1
     while input_char < 0 or input_char > len(possible_options):    
@@ -42,3 +49,18 @@ def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""
         possible_options[input_char - 1]["callable"]()
     
     return input_char
+
+
+def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_lines: list[int] = [], top: bool=False, bottom:bool=False):    
+    if top:
+        print(f"+{"-" * width}+")
+
+    for idx, line in enumerate(text_lines):
+        if centered_lines.__contains__(idx):
+            print(f"|{line.center(width)}|")
+        
+        else:
+            print(f"|{line.ljust(width)}|")
+    
+    if bottom:
+        print(f"+{"-" * width}+")
