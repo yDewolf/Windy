@@ -241,7 +241,7 @@ def show_games_page(current_page: int, games: list, max_game_per_page: int, last
         menu_lines.append(f"Game ID: {game["id"]}")
         menu_lines.append("")
     
-    menu_lines.append(f"{current_page}/{last_page}")
+    menu_lines.append(f"{current_page + 1}/{last_page}")
     MenuManager.generate_menu_ui(menu_lines, MenuManager.console_size, centered_lines, True)
     
     print(f"\n{"-" * MenuManager.console_size}\n")
@@ -249,11 +249,11 @@ def show_games_page(current_page: int, games: list, max_game_per_page: int, last
 def select_page(last_page: int):
     new_page = -1
     while new_page < 0 or new_page > last_page:
-        new_page = int(input("Select the page: "))
+        new_page = int(input("Select the page: ")) - 1
         if new_page < 0:
-            PrintFramework.custom_print("The page number needs to be a positive number", Colors.WARNING)
+            PrintFramework.custom_print("The page number has to be greater than 0", Colors.WARNING)
         elif new_page > last_page:
-            PrintFramework.custom_print(f"The page number needs to be smaller or equal as {last_page}", Colors.WARNING)
+            PrintFramework.custom_print(f"The page number has to be smaller or equal as {last_page}", Colors.WARNING)
     
     return new_page
 
@@ -293,8 +293,8 @@ def get_games_by_page(games: list, current_page: int, max_games_per_page: int = 
     game_infos = []
 
     for i in range(0, max_games_per_page):
-        gameIdx = i + current_page
-        if gameIdx > len(games):
+        gameIdx = i + current_page * max_games_per_page
+        if gameIdx >= len(games):
             break
         
         print(gameIdx)
