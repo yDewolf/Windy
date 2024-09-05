@@ -223,6 +223,87 @@ def game_catalog_menu():
     # FIX ME
     GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
 
+
+def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
+    menu_lines = []
+    centered_lines = []
+
+    menu_lines.append(f"Games in page: {current_page}")
+    centered_lines.append(0)
+
+    for game in get_games_by_page(games, current_page, max_game_per_page):
+        menu_lines.append(game["name"])
+        centered_lines.append(len(menu_lines) - 1)
+        menu_lines.append(f"Description: {game["description"]}")
+        menu_lines.append(f"Developer ID: {game["developer_id"]}")
+        menu_lines.append("")
+        menu_lines.append(f"Price: R$ {game["price"]}")
+        menu_lines.append(f"Game ID: {game["id"]}")
+        menu_lines.append("")
+    
+    menu_lines.append(f"{current_page}/{last_page}")
+    MenuManager.generate_menu_ui(menu_lines, MenuManager.console_size, centered_lines, True)
+    
+    print(f"\n{"-" * MenuManager.console_size}\n")
+
+def select_page(last_page: int):
+    new_page = -1
+    while new_page < 0 or new_page > last_page:
+        new_page = int(input("Select the page: "))
+        if new_page < 0:
+            PrintFramework.custom_print("The page number needs to be a positive number", Colors.WARNING)
+        elif new_page > last_page:
+            PrintFramework.custom_print(f"The page number needs to be smaller or equal as {last_page}", Colors.WARNING)
+    
+    return new_page
+
+def new_game_catalog_menu():
+    print(f"{"-" * MenuManager.console_size}")
+    PrintFramework.custom_print("Games in Catalog:", Colors.HEADER)
+
+    current_page: int = 0
+
+    games_data = CsvReader.load_csv(data_holder.gamedata_path, ["id", "name", "description", "price", "developer_id"])
+    max_game_per_page = 3
+    last_page = round(len(games_data)/max_game_per_page)
+
+
+    options = [
+        {
+            "name": "Change Page",
+        },
+        {
+            "name": "Buy game"
+        }
+    ]
+
+    while True:
+        show_games_page(current_page, games_data, max_game_per_page, last_page)
+
+        selected = MenuManager.option_menu(options, "Go back to main menu", " ")
+        match selected:
+            case 0:
+                break
+            case 1:
+                current_page = select_page(last_page)
+            case 2:
+                pass
+
+def get_games_by_page(games: list, current_page: int, max_games_per_page: int = 5):
+    game_infos = []
+
+    for i in range(0, max_games_per_page):
+        gameIdx = i + current_page
+        if gameIdx > len(games):
+            break
+        
+        print(gameIdx)
+
+        game_info = games[gameIdx]
+        game_infos.append(game_info)
+    
+    return game_infos
+
 def library_menu():
     #print("-----------------------")
     PrintFramework.custom_print("Games in Library:", Colors.HEADER)
@@ -360,7 +441,8 @@ def be_a_developer_menu():
         dev_name = input()
 
         sign_in_error = AccountUtils.sign_as_dev(current_session.user_data["id"], dev_name, cpf, cnpj, name, address, data_holder)
-    
+        current_session.is_developer = True
+
     PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
 
 
@@ -434,7 +516,7 @@ menus = [
     {
         "name": "Game catalog",
         "condition": is_online,
-        "callable": game_catalog_menu
+        "callable": new_game_catalog_menu
     },
     {
         "name": "Publish Games",
