@@ -21,11 +21,12 @@ class Session:
     cfg_path: str
     config: dict
 
-    def __init__(self, data_holder: DataHolder, accounts_path: str="", cfg_path: str="") -> None:
+    def __init__(self, data_holder: DataHolder, cfg_path: str="") -> None:
         self.data_holder = data_holder
 
         self.cfg_path = cfg_path
         self.config = CfgReader.read_cfg_file(cfg_path)
+        accounts_path = self.config["accounts_path"]
 
         if self.config["auto_login"]:
             self.get_logged_accounts(accounts_path)
@@ -95,6 +96,6 @@ class Session:
         CfgReader.write_cfg_file(self.cfg_path, self.config)
 
 
-def start_session(data_holder, accounts_path: str="", cfg_path: str="") -> Session:
-    return Session(data_holder, accounts_path, cfg_path)
+def start_session(data_holder, cfg_path: str="") -> Session:
+    return Session(data_holder, cfg_path)
 

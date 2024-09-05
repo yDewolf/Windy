@@ -18,12 +18,11 @@ default_gamedata_path: str = "data/gamedata.csv"
 default_userdata_path: str = "data/userdata.csv"
 default_devdata_path: str = "data/developerdata.csv"
 
-default_logged_accounts_path: str = "session_data/logged_accounts.csv"
 default_session_cfg_path: str = "config/session_config.cfg"
 
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
 
-current_session = Session.start_session(data_holder, default_logged_accounts_path, default_session_cfg_path)
+current_session = Session.start_session(data_holder, default_session_cfg_path)
 
 # Other functions
 
@@ -175,54 +174,6 @@ def remember_account(username, password):
     if remember:
         CsvReader.append_data({"username": username, "password": password}, default_logged_accounts_path)
         current_session.update_last_logged(-1)
-
-
-
-def game_catalog_menu():
-    print(f"{"-" * MenuManager.console_size}")
-    PrintFramework.custom_print("Games in Catalog:", Colors.HEADER)
-
-    buy_options: list[int] = []
-    for gameId in data_holder.games_data:
-        game_info = data_holder.games_data[gameId]
-        game_status: bool = current_session.user_data["library"].count(gameId) > 0
-
-        PrintFramework.custom_print(f"\n--- {game_info["name"]} --- Already Owned: {game_status}", Colors.HEADER)
-        PrintFramework.custom_print(f"{game_info["description"]}", Colors.CYAN)
-        PrintFramework.custom_print(f"Game price: {game_info["price"]}", Colors.WARNING)
-        print(f"{Colors.CYAN.value}[{gameId}]{Colors.ENDC.value}-buy {Colors.HEADER.value}{game_info["name"]}{Colors.ENDC.value}")
-
-        buy_options.append(gameId)
-    
-    print(f"\n{"-" * MenuManager.console_size}\n")
-
-    game_id = -1
-    while not data_holder.games_data.get(game_id) or GameInteractions.check_bought(game_id, current_session.user_data):
-        if not MenuManager.option_menu([{"name": "Purchase Games"}], "Go back to Main Menu", " ", ""):
-            return
-
-        game_id = int(input("Type the game id to purchase it: "))
-
-        if not data_holder.games_data.get(game_id):
-            PrintFramework.custom_print(f"Invalid game id", Colors.WARNING)
-    
-        if GameInteractions.check_bought(game_id, current_session.user_data):
-            PrintFramework.custom_print("You already have this game", Colors.WARNING)
-
-    confirm = -1
-    while confirm != 0 and confirm != 1:
-        PrintFramework.custom_print("Type 1 to confirm purchase", Colors.GREEN)
-        PrintFramework.custom_print("Type 0 to deny purchase\n", Colors.FAIL)
-        confirm = int(input(""))
-        if confirm != 0 and confirm != 1:
-            PrintFramework.custom_print("Invalid option", Colors.WARNING)
-    
-    if not confirm:
-        return
-    
-    # FIX ME
-    GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
-
 
 
 def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
