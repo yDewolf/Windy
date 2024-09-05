@@ -9,3 +9,5 @@ Account Settings:
 Login and Sign in checks:
 - Login checks for valid username and correct password
 - Sign in checks for valid password lengths, for username and email already in use
+
+NEW GAME CATALOG!!

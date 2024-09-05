@@ -128,31 +128,44 @@ def option_menu(options: list[dict], option_0: str="Quit", title="", subtitle=""
     return input_char
 
 
-def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_lines: list[int] = [], top: bool=False, bottom:bool=False):    
+def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_lines: list[int] = [], top: bool=False, bottom:bool=False, line_colors: list[Colors] = []):    
     if top:
         print(f"+{"-" * width}+")
 
     for idx, line in enumerate(text_lines):
+        adjusted_line = line
+        
         if centered_lines.__contains__(idx):
-            print(f"{border}{line.center(width)}{border}")
+            adjusted_line = line.center(width)
         
         else:
-            print(f"{border}{line.ljust(width)}{border}")
+            adjusted_line = line.ljust(width)
+        
+        if line_colors.__contains__(idx):
+            custom_print(f"{border}{line_colors[idx].value}{adjusted_line}{border}", Colors.ENDC)
+        else:
+            print(f"{border}{adjusted_line}{border}")
     
     if bottom:
         print(f"+{"-" * width}+")
 
-
-# def test_form_callable(inpputed_idx: int):
-#     match inpputed_idx:
-#         case 1:
-#             print("This is the first option")
-#         case 2:
-#             print("This is the second option")
-#         case 0:
-#             return
-
-# test_form = Form("This is a test form:", ["Option 1", "Option 2", "Option 3", ], test_form_callable)
-
-# test_menu = Menu("This is a test menu", "Made for testing the new menu system!", ["The form below has 4 options!"], [test_form])
-# test_menu.create()
+def generate_menu_w_param(lines: list[dict], width: int = console_size, top: bool = False, bottom: bool = False):
+    if top:
+        print(f"+{"-" * width}+")
+    
+    for idx, line_dict in enumerate(lines):
+        adjusted_line = line_dict["text"]
+        if line_dict.get("adjust") == "c":
+            adjusted_line = adjusted_line.center(width)
+        elif line_dict.get("adjust") == "r":
+            adjusted_line = adjusted_line.rjust(width)
+        
+        print(border, end="")
+        if line_dict.get("color"):
+            custom_print(f"{adjusted_line}{border}", line_dict["color"], False)
+            print()
+        else:
+            print(f"{adjusted_line}{border}")
+    
+    if bottom:
+        print(f"+{"-" * width}+")

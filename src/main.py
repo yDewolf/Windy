@@ -224,25 +224,28 @@ def game_catalog_menu():
     GameInteractions.purchase_game(game_id, current_session.user_data, data_holder)
 
 
+
 def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
     menu_lines = []
-    centered_lines = []
+    #line_parameters = {
+    #    "text": "",
+    #    "color": Colors.ENDC,
+    #    "adjust": "l"
+    #}
 
-    menu_lines.append(f"Games in page: {current_page}")
-    centered_lines.append(0)
+    menu_lines.append({"text": f"Games in page: {current_page}", "color": Colors.CYAN, "adjust": "c"})
 
     for game in get_games_by_page(games, current_page, max_game_per_page):
-        menu_lines.append(game["name"])
-        centered_lines.append(len(menu_lines) - 1)
-        menu_lines.append(f"Description: {game["description"]}")
-        menu_lines.append(f"Developer ID: {game["developer_id"]}")
-        menu_lines.append("")
-        menu_lines.append(f"Price: R$ {game["price"]}")
-        menu_lines.append(f"Game ID: {game["id"]}")
-        menu_lines.append("")
+        menu_lines.append({"text": game["name"], "color": Colors.HEADER, "adjust": "c"})
+        menu_lines.append({"text": f"Description: {game["description"]}"})
+        menu_lines.append({"text": f"Developer ID: {game["developer_id"]}"})
+        menu_lines.append({"text": ""})
+        menu_lines.append({"text": f"Price: R$ {game["price"]}", "color": Colors.WARNING})
+        menu_lines.append({"text": f"Game ID: {game["id"]}", "color": Colors.CYAN})
+        menu_lines.append({"text": ""})
     
-    menu_lines.append(f"{current_page + 1}/{last_page}")
-    MenuManager.generate_menu_ui(menu_lines, MenuManager.console_size, centered_lines, True)
+    menu_lines.append({"text": f"{current_page + 1}/{last_page}", "color": Colors.CYAN, "adjust": "c"})
+    MenuManager.generate_menu_w_param(menu_lines)
     
     print(f"\n{"-" * MenuManager.console_size}\n")
 
@@ -256,6 +259,20 @@ def select_page(last_page: int):
             PrintFramework.custom_print(f"The page number has to be smaller or equal as {last_page}", Colors.WARNING)
     
     return new_page
+
+def get_games_by_page(games: list, current_page: int, max_games_per_page: int = 5):
+    game_infos = []
+
+    for i in range(0, max_games_per_page):
+        gameIdx = i + current_page * max_games_per_page
+        if gameIdx >= len(games):
+            break
+
+        game_info = games[gameIdx]
+        game_infos.append(game_info)
+    
+    return game_infos
+                
 
 def new_game_catalog_menu():
     print(f"{"-" * MenuManager.console_size}")
@@ -287,22 +304,39 @@ def new_game_catalog_menu():
             case 1:
                 current_page = select_page(last_page)
             case 2:
-                pass
+                PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
+                #account_data = current_session.user_data
+                game_id = -1
+                # Check if is a valid game id
+                while not data_holder.games_data.__contains__(game_id):
+                    game_id = int(input())
+                    
+                    if game_id == -1:
+                        break
+                    
+                    elif GameInteractions.check_bought(game_id, current_session.user_data):
+                        PrintFramework.custom_print("You already have this game!", Colors.WARNING)
+                        #PrintFramework.custom_print("Do you want to buy for a friend?", Colors.HEADER)
+                        #if MenuManager.option_menu([{"name": f"{Colors.GREEN.value}No{Colors.ENDC.value}"}], f"{Colors.FAIL.value}Yes{Colors.ENDC.value}", " ", " "):
+                        #    continue
+                        
+                        
+                    
+                    elif not data_holder.games_data.__contains__(game_id):
+                        PrintFramework.custom_print("Invalid game ID.", Colors.WARNING)
+                        PrintFramework.custom_print("To go back to main menu, type -1", Colors.WARNING)
 
-def get_games_by_page(games: list, current_page: int, max_games_per_page: int = 5):
-    game_infos = []
+                PrintFramework.custom_print("Are you sure you want to buy: ", Colors.WARNING)
+                PrintFramework.custom_print(f"{data_holder.games_data[game_id]["name"]} | {Colors.WARNING.value} Price: R$ {data_holder.games_data[game_id]["price"]}", Colors.HEADER)
 
-    for i in range(0, max_games_per_page):
-        gameIdx = i + current_page * max_games_per_page
-        if gameIdx >= len(games):
-            break
-        
-        print(gameIdx)
+                if MenuManager.option_menu([{"name": f"{Colors.GREEN.value}No{Colors.ENDC.value}"}], f"{Colors.FAIL.value}Yes{Colors.ENDC.value}", " ", " "):
+                    PrintFramework.custom_print("Returning to Main Menu", Colors.CYAN)
+                    break
+                
+                if GameInteractions.purchase_game(game_id, current_session.user_data, data_holder):
+                    PrintFramework.custom_print(f"You now own {data_holder.games_data[game_id]["name"]}!", Colors.GREEN)
+                
 
-        game_info = games[gameIdx]
-        game_infos.append(game_info)
-    
-    return game_infos
 
 def library_menu():
     #print("-----------------------")

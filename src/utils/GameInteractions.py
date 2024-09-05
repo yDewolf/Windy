@@ -8,11 +8,12 @@ from framework.PrintFramework import Colors
 # Inserts a new game to the user data / csv
 def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     if check_bought(game_id, user_data):
-        return
+        return False
 
     user_data["library"].append(game_id)
     data_holder.users_data[user_data["id"]]["library"].append(game_id)
     CsvReader.overwrite_data(data_holder.users_data, data_holder.userdata_path)
+    return True
 
 # Inserts a new game on the games data / csv
 def publish_game(name: str, description: str, price: float, user_data: dict, data_holder: DataHolder):
