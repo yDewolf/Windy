@@ -1,0 +1,11 @@
+Visual update:
+- Removed the borders of the menu
+
+Account Settings:
+-- You can now:
+- Delete your account
+- Change your password
+
+Login and Sign in checks:
+- Login checks for valid username and correct password
+- Sign in checks for valid password lengths, for username and email already in use

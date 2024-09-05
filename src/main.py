@@ -12,6 +12,8 @@ import utils.AccountUtils as AccountUtils
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
 
+default_changelog_path: str = "changelog.txt"
+
 default_gamedata_path: str = "data/gamedata.csv"
 default_userdata_path: str = "data/userdata.csv"
 default_devdata_path: str = "data/developerdata.csv"
@@ -22,6 +24,16 @@ default_session_cfg_path: str = "config/session_config.cfg"
 data_holder: DataHolder = DataHolder(default_gamedata_path, default_userdata_path, default_devdata_path)
 
 current_session = Session.start_session(data_holder, default_logged_accounts_path, default_session_cfg_path)
+
+# Other functions
+
+def show_changelog():
+    PrintFramework.custom_print("Latest Changelog: ", Colors.ENDC)
+    with open(default_changelog_path, "r") as file:
+        changelog = file.read()
+    
+    PrintFramework.custom_print(changelog, Colors.HEADER)
+
 
 # Menu Callables
 
@@ -437,9 +449,15 @@ menus = [
 ]
 
 
-print(f"+{"-" * MenuManager.console_size}+")
+def main():
+    show_changelog()
 
-while True:
-    if main_menu() == 0:
-        current_session.save_cfg()
-        break
+    print(f"+{"-" * MenuManager.console_size}+")
+
+    while True:
+        if main_menu() == 0:
+            current_session.save_cfg()
+            break
+
+
+main()
