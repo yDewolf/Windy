@@ -27,10 +27,12 @@ O Windy é um sistema de venda de jogos baseado na Steam feito em Python. O sist
 # Algumas curiosidades sobre o Projeto:
 
 - O projeto foi nomeado de "Windy" (Ventoso) como uma inspiração do nome "Steam" (Vapor)
-- O nome "Windy" ou "Ventoso", em português, também tem o significado de algo que é um tanto caótico,
- mas ao mesmo tempo previsível. Na minha opinião, isso define bem o projeto.
+- O nome "Windy" ou "Ventoso", em português, também tem o significado de algo que é um tanto caótico, mas ao mesmo tempo previsível. Na minha opinião, isso define bem o projeto.
+- A média de tempo que eu gastei trabalhando nesse projeto foi umas 22+ horas
 
 - A maior parte das ideias para o projeto eu tive enquanto tomava banho
+- O projeto não teve um grande planejamento, partiu de uma ideia um tanto simples (Criar algo próximo à Steam) e, devido à falta de planejamento, acabou tendo um escopo um pouco grande, o qual não pôde ser totalmente concluído.
+
 - O controle de foco foi feito majoritáriamente pelo Whatsapp, onde eu me mandava uma lista de prioridade do que devia ser feito primeiro e depois fazia:
 
 (Sexta-feira 30/09/24)
@@ -45,5 +47,10 @@ O Windy é um sistema de venda de jogos baseado na Steam feito em Python. O sist
     4. Poder publicar jogos (se a conta for de desenvolvedor)
     5. PrintFramework e MenuFramework"
 
-- O projeto não teve um grande planejamento, partiu de uma ideia um tanto simples (Criar algo próximo à Steam) 
-e, devido à falta de planejamento, acabou tendo um escopo um pouco grande, o qual não pôde ser totalmente concluído.
+# Opiniões pessoais sobre o projeto:
+
+Foi um projeto até que bem desenvolvido, obviamente poderia ter sido melhor planejado e mais organizado, principalmente na forma que os menus são construídos (dá até medo olhar o main.py).
+Ainda que possa ter sido melhor desenvolvido, acredito que foi uma experiência interessante, perceber durante a criação do projeto coisas que eu não tinha pensado quando tive a ideia inicial me fez valorizar mais o planejamento.
+Olhando por cima, não parece ser um sistema com muitas features e, realmente, não tem muitas features mesmo, mas a maior parte das que tem funcionam muito bem (não estou considerando os menus).
+A última coisa que eu tenho a dizer é que se eu fosse melhorar esse sistema, provavelmente teria que recomeçar ele do zero, já que muita coisa acaba sendo um pouco confusa, como:
+- Não tem um padrão sobre como as informações do usuário é tratada, se você não sabe como usar, você vai demorar um pouco para entender já que ao invés de usar classes, eu usei mais dicionários, onde você pode inserir qualquer informação, com chaves erradas e etc. Isso provavelmente seria evitado com o uso de classes
