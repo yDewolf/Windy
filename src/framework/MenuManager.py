@@ -5,6 +5,7 @@ from framework.PrintFramework import Colors
 # from PrintFramework import Colors
 
 console_size = 50
+border = ""
 
 # Forms:
 # - Can have a title
@@ -133,10 +134,10 @@ def generate_menu_ui(text_lines: list[str], width: int=console_size, centered_li
 
     for idx, line in enumerate(text_lines):
         if centered_lines.__contains__(idx):
-            print(f"|{line.center(width)}|")
+            print(f"{border}{line.center(width)}{border}")
         
         else:
-            print(f"|{line.ljust(width)}|")
+            print(f"{border}{line.ljust(width)}{border}")
     
     if bottom:
         print(f"+{"-" * width}+")

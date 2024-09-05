@@ -4,7 +4,7 @@ import utils.CsvReader as CsvReader
 import framework.PrintFramework as PrintFramework
 from framework.PrintFramework import Colors
 
-debug = True
+debug = False
 
 # Really bad and unsafe login system
 def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
@@ -12,6 +12,8 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
     # User data collected from the database
     users = CsvReader.load_csv(data_holder.userdata_path, ["username", "password", "id", "library"], True)
 
+    # // FIX ME ?
+    # Again useless double checking since the Login New Account menu already checks these
     if users.get(username):
         if users[username]["password"] == password:
             PrintFramework.custom_print(f"Logged in succesfully as {username}", Colors.GREEN)
@@ -23,7 +25,7 @@ def log_in(username: str, password: str, data_holder: DataHolder) -> dict:
             PrintFramework.custom_print(f"\nIncorrect Password", Colors.WARNING)
             return {}
     
-    PrintFramework.custom_print(f"User not found in database", Colors.WARNING)
+    PrintFramework.custom_print(f"User not found", Colors.WARNING)
 
     if debug:
         PrintFramework.custom_print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^\nIs this an Error?", Colors.WARNING)
@@ -36,6 +38,9 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
     # Check if already has an user with the same username or email
     # Register user on database
     users_data = CsvReader.get_csv_columns(data_holder.userdata_path, ["username", "email"])
+
+    # // FIX ME ?
+    # Kinda useless double check on the inputted values since the sign in menu already checks these info
     if users_data["username"].get(username):
         PrintFramework.custom_print("User already exists", Colors.WARNING)
         return
@@ -51,6 +56,12 @@ def sign_in(username: str, email: str, password: str, data_holder: DataHolder):
         "email": email,
         "library": []
     }
+
+    # "easter egg"
+    if data_holder.users_data.get(user_data["id"]):
+        PrintFramework.custom_print("Parabéns! de algum jeito seu id de usuário conseguiu ser igual ao de algum outro usuário", Colors.GREEN)
+        PrintFramework.custom_print("Infelizmente, não podemos ter duas contas com o mesmo id, a sua terá de ser removida", Colors.WARNING)
+        return
 
     data_holder.users_data[user_data["id"]] = user_data
     CsvReader.append_data(user_data, data_holder.userdata_path)

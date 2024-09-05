@@ -69,10 +69,32 @@ def login_menu():
     login_new_account()
 
 def login_new_account():
-    username = input("Username: ")
-    password = input("Password: ")
-    
-    # If logged in succesfully
+    users_data = CsvReader.load_csv(data_holder.userdata_path, ["username", "id", "password"], True)
+
+    PrintFramework.custom_print("Type the username of your account:", Colors.HEADER)
+    PrintFramework.custom_print("Leave it blank to go back to Main Menu", Colors.WARNING)
+    username = ""
+    while username == "" or not users_data.__contains__(username):
+        username = input()
+
+        if username == "":
+            return
+
+        if not users_data.__contains__(username):
+            PrintFramework.custom_print("User not found", Colors.WARNING)
+
+    PrintFramework.custom_print("Type the password of the account:", Colors.HEADER)
+    PrintFramework.custom_print("Leave it blank to go back to Main Menu", Colors.WARNING)
+    password = ""
+    while password != users_data[username]["password"]:
+        password = input()
+
+        if password == "":
+            return
+
+        if password != users_data[username]["password"]:
+            PrintFramework.custom_print("Wrong password", Colors.WARNING)
+
     if current_session.session_login(username, password):
         remember_account(username, password)
 
@@ -80,10 +102,43 @@ def login_new_account():
 def sign_in_menu():
     if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER.value}Sign in{Colors.ENDC.value}"):
         return
+    
+    users_data = CsvReader.get_csv_columns(data_holder.userdata_path, ["username", "email"])
+    min_password_size: int = 6
+    max_password_size: int = 32
 
-    username = input("Username: ")
-    password = input("Password: ")
-    email = input("Email: ")
+    # Checking if the username is already in use
+    PrintFramework.custom_print("Give your account a cool name: ", Colors.HEADER)
+    PrintFramework.custom_print("Note that you can't change it", Colors.WARNING)
+    username = ""
+    while username == "" or users_data["username"].get(username):
+        username = input()
+
+        if users_data["username"].get(username):
+            PrintFramework.custom_print("User already exists", Colors.WARNING)
+
+    # Checking if the password has a valid size
+    PrintFramework.custom_print("Create a safe and remindable password: ", Colors.HEADER)
+    PrintFramework.custom_print(f"Minimum size: {min_password_size} characters, Maximum size: {max_password_size} characters", Colors.WARNING)
+    password = ""
+    while len(password) < min_password_size or len(password) > max_password_size:
+        password = input()
+
+        if len(password) < min_password_size:
+            PrintFramework.custom_print(f"Your password needs to have at least {min_password_size} characters", Colors.WARNING)
+        elif len(password) > max_password_size:
+            PrintFramework.custom_print(f"The maximum character amount is {max_password_size}, try a smaller password", Colors.WARNING)
+
+    # Checking if the email is already registered
+    PrintFramework.custom_print("Register your email: ", Colors.HEADER)
+    email = ""
+    while email == "" or users_data["email"].get(email):
+        email = input()
+
+        if users_data["email"].get(email):
+            PrintFramework.custom_print("Email is already in use", Colors.WARNING)
+
+
     ApiLogin.sign_in(username, email, password, data_holder)
     if current_session.session_login(username, password):
         remember_account(username, password)
@@ -179,6 +234,10 @@ def account_settings_menu():
         {
             "name": "Delete my account",
             "callable": delete_account_menu
+        },
+        {
+            "name": "Change password",
+            "callable": change_password_menu
         }
     ]
 
@@ -188,6 +247,43 @@ def account_settings_menu():
     #         return
     #     case 1:
     #         be_a_developer_menu()
+
+def change_password_menu():
+    if not MenuManager.option_menu([{"name": "Go back to Main Menu"}], "Proceed changing my password", "", " "):
+        PrintFramework.custom_print("Please type your current password: ", Colors.HEADER)
+        current_password = ""
+        while current_password != current_session.user_data["password"]:
+            current_password = input()
+            if current_password == "-1":
+                PrintFramework.custom_print("Returning to main menu", Colors.CYAN)
+                return
+
+            if current_password != current_session.user_data["password"]:
+                PrintFramework.custom_print("Wrong password! To go back to main menu type: '-1'", Colors.WARNING)
+
+        PrintFramework.custom_print("Type your new password (It can't be the same as the previous):", Colors.HEADER)
+        
+        new_password = current_password
+        while new_password == current_password:
+            new_password = input()
+            if new_password == "-1":
+                PrintFramework.custom_print("Returning to main menu", Colors.CYAN)
+                return
+
+            if new_password == current_password:
+                PrintFramework.custom_print("Your password can't be the same as the previous! To go back to main menu type: '-1'", Colors.WARNING)
+
+        PrintFramework.custom_print("To confirm your changes, select 0:", Colors.CYAN)
+        if not MenuManager.option_menu([{"name": "Go back to main menu"}], "Confirm new password", " ", " "):
+            # Update values:
+            current_session.user_data["password"] = new_password
+            data_holder.users_data[current_session.user_data["id"]]["password"] = new_password
+            CsvReader.overwrite_data(data_holder.users_data, data_holder.userdata_path)
+
+            PrintFramework.custom_print("Changed password succesfully!", Colors.GREEN)
+            PrintFramework.custom_print("Note that when you reload your client, you will have to log in again", Colors.WARNING)
+
+
 
 def delete_account_menu():
     PrintFramework.custom_print("Do you want to delete your account?", Colors.HEADER)
@@ -206,7 +302,6 @@ def delete_account_menu():
         if not MenuManager.option_menu([{"name": "I changed my mind"}], "I really want to delete my account", " ", " "):
             AccountUtils.delete_account(current_session.user_data["id"], username, password, data_holder)
             current_session.session_signout()
-
 
 def be_a_developer_menu():
     PrintFramework.custom_print("Do you want to enter the Developers Project?", Colors.HEADER)
@@ -255,6 +350,7 @@ def be_a_developer_menu():
         sign_in_error = AccountUtils.sign_as_dev(current_session.user_data["id"], dev_name, cpf, cnpj, name, address, data_holder)
     
     PrintFramework.custom_print("You are now registered as a Developer", Colors.GREEN)
+
 
 def publish_game_menu():
     if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"Publish Game Menu"):
