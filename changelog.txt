@@ -1,15 +1,12 @@
-Visual update:
-- Removed the borders of the menu
+Windy v0.8
 
-Account Settings:
--- You can now:
-- Delete your account
-- Change your password
+---- NEW GAME CATALOG MENU ----
 
-Login and Sign in checks:
-- Login checks for valid username and correct password
-- Sign in checks for valid password lengths, for username and email already in use
+The new catalog menu is now released!
+With a better UI and a pagination system,
+you can easily find games you want to play!
 
-NEW GAME CATALOG!!
-
-You can now search for games in the new catalog!!
+In the new catalog you can:
+- See all games in our database;
+- Search for games you want;
+- Filter games by selected genres.

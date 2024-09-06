@@ -16,7 +16,7 @@ O Windy é um sistema de venda de jogos baseado na Steam feito em Python. O sist
 
 - Avaliação de jogos (Texto e também 0 à 10)
 - Pesquisa de jogos | X
-- Filtro de jogos
+- Filtro de jogos | X
 - Sistema de amigos (Com compra de jogos para amigos)
 
 

@@ -34,6 +34,18 @@ def show_changelog():
     PrintFramework.custom_print(changelog, Colors.HEADER)
 
 
+# Sendo bem sincero, se você estiver lendo isso e tiver vontade de ler as linhas de códigos que vêm a seguir
+# eu sugiro que você pare por aqui e vá olhar os outros arquivos desse projeto
+# As funções abaixo geram os menus do sistema
+# A maior parte delas são baseadas em:
+#  PrintFramework.custom_print
+#  MenuManager.option_menu
+#  match option: etc etc
+# Boa parte delas são bem chatinhas de ler, então eu recomendo não ir muito a fundo
+# uma nota de organização que eu daria é 7/10 (mesmo sendo bem ruim de ler)
+# afinal de contas, tudo funciona na maior parte das vezes...
+
+
 # Menu Callables
 
 def main_menu():
@@ -201,6 +213,9 @@ def show_games_page(current_page: int, games: list, genres: list[str], max_game_
         menu_lines.append({"text": f"Developer ID: {game["developer_id"]}"})
         menu_lines.append({"text": ""})
         menu_lines.append({"text": f"Price: R$ {game["price"]}", "color": Colors.WARNING})
+        if GameInteractions.check_bought(game["id"], current_session.user_data):
+            menu_lines.append({"text": "You already have this game!", "color": Colors.GREEN})
+
         menu_lines.append({"text": f"Game ID: {game["id"]}", "color": Colors.CYAN})
         menu_lines.append({"text": ""})
     
@@ -249,11 +264,11 @@ def get_similarity(string: str, other_string: str):
         if charIdx >= len(other_string):
             if other_string.__contains__(string[charIdx]):
                 similarity += (max_size/100) / 2
+                continue 
             
-            else:
-                similarity -= (max_size/100) / 2
-           
-            continue 
+            similarity -= (max_size/100) / 2
+            continue
+
         
         if string[charIdx] == other_string[charIdx]:
             similarity += max_size/100
@@ -301,15 +316,17 @@ def new_game_catalog_menu():
             case 0:
                 break
             
+            # Page selection
             case 1:
                 current_page = select_page(last_page)
             
+            # Searching games
             case 2:
                 PrintFramework.custom_print("Type the name of the game you want to search: ", Colors.HEADER)
                 PrintFramework.custom_print("You can leave it empty to see all games", Colors.WARNING)
                 search = input()
+                current_page = 0
                 if search == "":
-                    current_page = 0
                     using_games_data = games_data
                     continue
                 
@@ -333,12 +350,16 @@ def new_game_catalog_menu():
                                         "developer_id": data_holder.games_data[gameId]["developer_id"]
                                         })
      
+            # Filtering games
             case 3:
                 PrintFramework.custom_print("Current genre filters: ", Colors.HEADER)
                 PrintFramework.custom_print(genre_filters, Colors.CYAN)
 
-                option = MenuManager.option_menu([{"name": "Add genres"}, {"name": "Clear genres"}], "Remove genres", " ")
+                option = MenuManager.option_menu([{"name": "Add genres"}, {"name": "Clear genres"}, {"name": "Remove genres"}], "Go back to catalog", " ")
                 match option:
+                    case 0:
+                        continue
+
                     case 1:
                         PrintFramework.custom_print("Type a genre name:", Colors.HEADER)
                         new_filter = input()
@@ -350,10 +371,10 @@ def new_game_catalog_menu():
                         genre_filters.clear()
                         PrintFramework.custom_print("Cleared genre filter successfully", Colors.CYAN)
                         
-                    case 0:
+                    case 3:
                         if len(genre_filters) <= 0:
                             PrintFramework.custom_print("You don't have any filter", Colors.WARNING)
-                            break
+                            continue
 
                         PrintFramework.custom_print("Type the genre number to remove it:", Colors.HEADER)
                         
@@ -366,31 +387,35 @@ def new_game_catalog_menu():
 
                         genre_filters.pop(genre_idx - len(genre_filters))
                 
+                current_page = 0
+                
                 # Update using games data
-                if len(genre_filters) > 0:
-                    filtered_games = []
-                    for game in using_games_data:
-                        matched_genres = 0
-                        for genre in game["genre"]:
-                            for selected_genre in genre_filters:
-                                if get_similarity(genre, selected_genre) > 0.7:
-                                    matched_genres += 1
-                        
-                        if matched_genres == 0:
-                            continue
-                            
-                        filtered_games.append(game)
-                    
-                    if len(filtered_games) == 0:
-                        PrintFramework.custom_print("No game was found with the filtered genres", Colors.WARNING)
-                        PrintFramework.custom_print("Resetting filters...", Colors.WARNING)
-                        genre_filters = []
-                        using_games_data = games_data
-                    else:
-                        using_games_data = filtered_games
-                    
-                else:
+                if len(genre_filters) == 0:
                     using_games_data = games_data
+                    continue
+
+                filtered_games = []
+                for game in using_games_data:
+                    matched_genres = 0
+                    for genre in game["genre"]:
+                        for selected_genre in genre_filters:
+                            if get_similarity(genre, selected_genre) > 0.7:
+                                matched_genres += 1
+                    
+                    if matched_genres == 0:
+                        continue
+                        
+                    filtered_games.append(game)
+                
+                if not len(filtered_games) == 0:
+                    using_games_data = filtered_games
+                    continue
+                
+                PrintFramework.custom_print("No game was found with the filtered genres", Colors.WARNING)
+                PrintFramework.custom_print("Resetting filters...", Colors.WARNING)
+                genre_filters = []
+                using_games_data = games_data
+                                        
                 
             case 4:
                 PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
