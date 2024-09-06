@@ -178,13 +178,8 @@ def remember_account(username, password):
 
 def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
     menu_lines = []
-    #line_parameters = {
-    #    "text": "",
-    #    "color": Colors.ENDC,
-    #    "adjust": "l"
-    #}
 
-    menu_lines.append({"text": f"Games in page: {current_page}", "color": Colors.CYAN, "adjust": "c"})
+    menu_lines.append({"text": f"Games in page: {current_page + 1}", "color": Colors.CYAN, "adjust": "c"})
 
     for game in get_games_by_page(games, current_page, max_game_per_page):
         menu_lines.append({"text": game["name"], "color": Colors.HEADER, "adjust": "c"})
@@ -223,7 +218,36 @@ def get_games_by_page(games: list, current_page: int, max_games_per_page: int = 
         game_infos.append(game_info)
     
     return game_infos
-                
+
+def get_similarity(string: str, other_string: str):
+    string = string.lower()
+    other_string = other_string.lower()
+    
+    if string == other_string:
+        return 1
+    
+    similarity = 0
+    max_size = max(len(string), len(other_string))
+    
+    for charIdx in range(max_size):
+        if charIdx >= len(string): 
+            continue
+        if charIdx >= len(other_string):
+            if other_string.__contains__(string[charIdx]):
+                similarity += (max_size/100) / 2
+            
+            else:
+                similarity -= (max_size/100) / 2
+           
+            continue 
+        
+        if string[charIdx] == other_string[charIdx]:
+            similarity += max_size/100
+            
+        elif other_string.__contains__(string[charIdx]):
+            similarity += (max_size/100) / 2
+        
+    return similarity
 
 def new_game_catalog_menu():
     print(f"{"-" * MenuManager.console_size}")
@@ -232,13 +256,19 @@ def new_game_catalog_menu():
     current_page: int = 0
 
     games_data = CsvReader.load_csv(data_holder.gamedata_path, ["id", "name", "description", "price", "developer_id"])
+    using_games_data = games_data
+    
     max_game_per_page = 3
+    search_threshold = 0.5
     last_page = round(len(games_data)/max_game_per_page)
 
 
     options = [
         {
-            "name": "Change Page",
+            "name": "Change Page"
+        },
+        {
+            "name": "Search games"
         },
         {
             "name": "Buy game"
@@ -246,7 +276,7 @@ def new_game_catalog_menu():
     ]
 
     while True:
-        show_games_page(current_page, games_data, max_game_per_page, last_page)
+        show_games_page(current_page, using_games_data, max_game_per_page, last_page)
 
         selected = MenuManager.option_menu(options, "Go back to main menu", " ")
         match selected:
@@ -254,7 +284,34 @@ def new_game_catalog_menu():
                 break
             case 1:
                 current_page = select_page(last_page)
+                
             case 2:
+                PrintFramework.custom_print("Type the name of the game you want to search: ", Colors.HEADER)
+                PrintFramework.custom_print("You can leave it empty to see all games", Colors.WARNING)
+                search = input()
+                if search == "":
+                    using_games_data = games_data
+                
+                similarity_list = {}
+                
+                for game in games_data:
+                    similarity = get_similarity(search, game["name"])
+                    
+                    if similarity > search_threshold:
+                        similarity_list[game["id"]] = similarity
+
+                # Sort game ids by similarity
+                sorted_dict = {key:value for key, value in sorted(similarity_list.items(), key=lambda similarity_list: similarity_list[1], reverse=True)}
+                using_games_data = []
+                for gameId in sorted_dict:
+                    using_games_data.append({"id": gameId,
+                                        "name": data_holder.games_data[gameId]["name"],
+                                        "description": data_holder.games_data[gameId]["description"],
+                                        "price": data_holder.games_data[gameId]["price"],
+                                        "developer_id": data_holder.games_data[gameId]["developer_id"]
+                                        })
+                     
+            case 3:
                 PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
                 #account_data = current_session.user_data
                 game_id = -1
