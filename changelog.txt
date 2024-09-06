@@ -11,3 +11,5 @@ Login and Sign in checks:
 - Sign in checks for valid password lengths, for username and email already in use
 
 NEW GAME CATALOG!!
+
+You can now search for games in the new catalog!!

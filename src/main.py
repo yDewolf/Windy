@@ -259,7 +259,7 @@ def new_game_catalog_menu():
     using_games_data = games_data
     
     max_game_per_page = 3
-    search_threshold = 0.5
+    search_threshold = 0.3
     last_page = round(len(games_data)/max_game_per_page)
 
 
