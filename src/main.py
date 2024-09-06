@@ -615,10 +615,14 @@ def publish_game_menu():
     PrintFramework.custom_print("How much your game will cost? (R$)", Colors.CYAN)
     price = float(input())
 
-    PrintFramework.custom_print("What genres your game is part off? (Split by ,)")
+    PrintFramework.custom_print("What genres your game is part off? (Split by ,)", Colors.CYAN)
     genres = input().split(",")
+    formatted_genres = []
+    for genre in genres:
+        genre = genre.removeprefix(" ").removesuffix(" ")
+        formatted_genres.append(genre)
 
-    GameInteractions.publish_game(game_name, game_description, price, genres, current_session.user_data, data_holder)
+    GameInteractions.publish_game(game_name, game_description, price, formatted_genres, current_session.user_data, data_holder)
 
     PrintFramework.custom_print("Your game was published successfully!", Colors.GREEN)
 
