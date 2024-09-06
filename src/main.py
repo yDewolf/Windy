@@ -123,7 +123,7 @@ def login_new_account():
 
 
 def sign_in_menu():
-    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER.value}Sign in{Colors.ENDC.value}"):
+    if MenuManager.option_menu([{"name": "Main Menu"}], "Continue", f"{Colors.HEADER}Sign in{Colors.ENDC}"):
         return
     
     users_data = CsvReader.get_csv_columns(data_holder.userdata_path, ["username", "email"])
@@ -184,7 +184,7 @@ def remember_account(username, password):
             PrintFramework.custom_print("Invalid option", Colors.WARNING)
     
     if remember:
-        CsvReader.append_data({"username": username, "password": password}, default_logged_accounts_path)
+        CsvReader.append_data({"username": username, "password": password}, current_session.config["accounts_path"])
         current_session.update_last_logged(-1)
 
 
@@ -441,9 +441,9 @@ def new_game_catalog_menu():
                         PrintFramework.custom_print("To go back to main menu, type -1", Colors.WARNING)
 
                 PrintFramework.custom_print("Are you sure you want to buy: ", Colors.WARNING)
-                PrintFramework.custom_print(f"{data_holder.games_data[game_id]["name"]} | {Colors.WARNING.value} Price: R$ {data_holder.games_data[game_id]["price"]}", Colors.HEADER)
+                PrintFramework.custom_print(f"{data_holder.games_data[game_id]["name"]} | {Colors.WARNING} Price: R$ {data_holder.games_data[game_id]["price"]}", Colors.HEADER)
 
-                if MenuManager.option_menu([{"name": f"{Colors.GREEN.value}No{Colors.ENDC.value}"}], f"{Colors.FAIL.value}Yes{Colors.ENDC.value}", " ", " "):
+                if MenuManager.option_menu([{"name": f"{Colors.GREEN}No{Colors.ENDC}"}], f"{Colors.FAIL}Yes{Colors.ENDC}", " ", " "):
                     PrintFramework.custom_print("Returning to Main Menu", Colors.CYAN)
                     break
                 
@@ -557,7 +557,7 @@ def be_a_developer_menu():
     sign_in_error = 0
     while not sign_in_error:
         PrintFramework.custom_print("\nDo you want to proceed to be a Developer?", Colors.WARNING)
-        if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}I don't want to be a Developer{Colors.ENDC.value}"}], f"{Colors.GREEN.value}I want to be a Developer{Colors.ENDC.value}", " ", " "):
+        if MenuManager.option_menu([{"name": f"{Colors.FAIL}I don't want to be a Developer{Colors.ENDC}"}], f"{Colors.GREEN}I want to be a Developer{Colors.ENDC}", " ", " "):
             return
 
         print("Please fill the fields with your info")
@@ -603,7 +603,7 @@ def publish_game_menu():
     print("To publish a game you need to fill these information about your game:")
     PrintFramework.custom_print("- Its name;\n- A description of it;\n- Its price", Colors.CYAN)
     PrintFramework.custom_print("\nDo you want to publish a game?", Colors.WARNING)
-    if MenuManager.option_menu([{"name": f"{Colors.FAIL.value}No{Colors.ENDC.value}"}], f"{Colors.GREEN.value}Yes{Colors.ENDC.value}", ""):
+    if MenuManager.option_menu([{"name": f"{Colors.FAIL}No{Colors.ENDC}"}], f"{Colors.GREEN}Yes{Colors.ENDC}", ""):
         return
     
     PrintFramework.custom_print("What is the name of your game?", Colors.CYAN)

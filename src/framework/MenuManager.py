@@ -7,6 +7,13 @@ from framework.PrintFramework import Colors
 console_size = 50
 border = ""
 
+
+# "Novo sistema de menus"
+# Provavelmente ele seria muito melhor de organizar
+# e muito falharia muito menos, porém, devido ao tempo
+# e um pouco de preguiça de refazer todos os menus...
+# Eu decidi não usar ele
+
 # Forms:
 # - Can have a title
 # - Receives the input type (int, float, str)

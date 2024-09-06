@@ -1,9 +1,8 @@
-import enum
 import os
 
 os.system('')
 
-class Colors(enum.Enum):
+class Colors:
     HEADER = "\033[95m"
     CYAN = "\033[96m"
     GREEN = "\033[92m"
@@ -13,7 +12,7 @@ class Colors(enum.Enum):
 
 def custom_print(text: str, color: Colors, new_line=True):
     if not new_line:
-        print(f"{color.value}{text}{Colors.ENDC.value}", sep=" ", end="")
+        print(f"{color}{text}{Colors.ENDC}", sep=" ", end="")
         return
 
-    print(f"{color.value}{text}{Colors.ENDC.value}")
+    print(f"{color}{text}{Colors.ENDC}")
