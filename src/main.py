@@ -180,6 +180,7 @@ def show_games_page(current_page: int, games: list, max_game_per_page: int, last
     menu_lines = []
 
     menu_lines.append({"text": f"Games in page: {current_page + 1}", "color": Colors.CYAN, "adjust": "c"})
+    menu_lines.append({"text": ""})
 
     for game in get_games_by_page(games, current_page, max_game_per_page):
         menu_lines.append({"text": game["name"], "color": Colors.HEADER, "adjust": "c"})
@@ -290,7 +291,9 @@ def new_game_catalog_menu():
                 PrintFramework.custom_print("You can leave it empty to see all games", Colors.WARNING)
                 search = input()
                 if search == "":
+                    current_page = 0
                     using_games_data = games_data
+                    continue
                 
                 similarity_list = {}
                 
@@ -310,6 +313,7 @@ def new_game_catalog_menu():
                                         "price": data_holder.games_data[gameId]["price"],
                                         "developer_id": data_holder.games_data[gameId]["developer_id"]
                                         })
+                
                      
             case 3:
                 PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
