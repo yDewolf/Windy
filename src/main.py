@@ -178,14 +178,25 @@ def remember_account(username, password):
 
 # Game menu
 
-def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
+def show_games_page(current_page: int, games: list, genres: list[str], max_game_per_page: int, last_page: int):
     menu_lines = []
 
     menu_lines.append({"text": f"Games in page: {current_page + 1}", "color": Colors.CYAN, "adjust": "c"})
     menu_lines.append({"text": ""})
 
     for game in get_games_by_page(games, current_page, max_game_per_page):
+        if len(genres) > 0:
+            matching_genres: int = 0
+            for genre in game["genre"]:
+                for selected_genre in genres:
+                    if get_similarity(genre, selected_genre) > 0.3:
+                        matching_genres += 1
+            
+            if matching_genres == 0:
+                continue
+        
         menu_lines.append({"text": game["name"], "color": Colors.HEADER, "adjust": "c"})
+        menu_lines.append({"text": f"Genres: {game["genre"]}"})
         menu_lines.append({"text": f"Description: {game["description"]}"})
         menu_lines.append({"text": f"Developer ID: {game["developer_id"]}"})
         menu_lines.append({"text": ""})
@@ -258,15 +269,13 @@ def new_game_catalog_menu():
 
     current_page: int = 0
 
-    games_data = CsvReader.load_csv(data_holder.gamedata_path, ["id", "name", "description", "price", "developer_id"])
+    games_data = CsvReader.load_csv(data_holder.gamedata_path, ["id", "name", "description", "price", "genre", "developer_id"])
 
     using_games_data = games_data
     genre_filters = []
 
     max_game_per_page = 3
     search_threshold = 0.3
-    last_page = round(len(games_data)/max_game_per_page)
-
 
     options = [
         {
@@ -284,7 +293,8 @@ def new_game_catalog_menu():
     ]
 
     while True:
-        show_games_page(current_page, using_games_data, max_game_per_page, last_page)
+        last_page = round(len(using_games_data)/max_game_per_page)
+        show_games_page(current_page, using_games_data, genre_filters, max_game_per_page, last_page)
 
         selected = MenuManager.option_menu(options, "Go back to main menu", " ")
         match selected:
@@ -319,6 +329,7 @@ def new_game_catalog_menu():
                                         "name": data_holder.games_data[gameId]["name"],
                                         "description": data_holder.games_data[gameId]["description"],
                                         "price": data_holder.games_data[gameId]["price"],
+                                        "genre": data_holder.games_data[gameId]["genre"],
                                         "developer_id": data_holder.games_data[gameId]["developer_id"]
                                         })
      
@@ -326,15 +337,19 @@ def new_game_catalog_menu():
                 PrintFramework.custom_print("Current genre filters: ", Colors.HEADER)
                 PrintFramework.custom_print(genre_filters, Colors.CYAN)
 
-                option = MenuManager.option_menu([{"name": "Add genres"}], "Remove genres", " ")
+                option = MenuManager.option_menu([{"name": "Add genres"}, {"name": "Clear genres"}], "Remove genres", " ")
                 match option:
                     case 1:
                         PrintFramework.custom_print("Type a genre name:", Colors.HEADER)
                         new_filter = input()
 
                         genre_filters.append(new_filter)
-                        PrintFramework(f"'{new_filter}' was added to genre filters", Colors.CYAN)
+                        PrintFramework.custom_print(f"'{new_filter}' was added to genre filters", Colors.CYAN)
 
+                    case 2:
+                        genre_filters.clear()
+                        PrintFramework.custom_print("Cleared genre filter successfully", Colors.CYAN)
+                        
                     case 0:
                         if len(genre_filters) <= 0:
                             PrintFramework.custom_print("You don't have any filter", Colors.WARNING)
@@ -350,7 +365,33 @@ def new_game_catalog_menu():
                         PrintFramework.custom_print(f"Removed {genre_filters[genre_idx - len(genre_filters)]} from filtered genres", Colors.CYAN)
 
                         genre_filters.pop(genre_idx - len(genre_filters))
-
+                
+                # Update using games data
+                if len(genre_filters) > 0:
+                    filtered_games = []
+                    for game in using_games_data:
+                        matched_genres = 0
+                        for genre in game["genre"]:
+                            for selected_genre in genre_filters:
+                                if get_similarity(genre, selected_genre) > 0.7:
+                                    matched_genres += 1
+                        
+                        if matched_genres == 0:
+                            continue
+                            
+                        filtered_games.append(game)
+                    
+                    if len(filtered_games) == 0:
+                        PrintFramework.custom_print("No game was found with the filtered genres", Colors.WARNING)
+                        PrintFramework.custom_print("Resetting filters...", Colors.WARNING)
+                        genre_filters = []
+                        using_games_data = games_data
+                    else:
+                        using_games_data = filtered_games
+                    
+                else:
+                    using_games_data = games_data
+                
             case 4:
                 PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
                 #account_data = current_session.user_data
@@ -549,7 +590,10 @@ def publish_game_menu():
     PrintFramework.custom_print("How much your game will cost? (R$)", Colors.CYAN)
     price = float(input())
 
-    GameInteractions.publish_game(game_name, game_description, price, current_session.user_data, data_holder)
+    PrintFramework.custom_print("What genres your game is part off? (Split by ,)")
+    genres = input().split(",")
+
+    GameInteractions.publish_game(game_name, game_description, price, genres, current_session.user_data, data_holder)
 
     PrintFramework.custom_print("Your game was published successfully!", Colors.GREEN)
 

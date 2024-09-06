@@ -49,6 +49,7 @@ def load_gamedata(data_path: str, debug=True) -> dict:
             "name": data["name"],
             "description": data["description"],
             "price": data["price"],
+            "genre": data["genre"],
             "developer_id": data["developer_id"]
         }
     

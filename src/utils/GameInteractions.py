@@ -13,7 +13,7 @@ def purchase_game(game_id: int, user_data: dict, data_holder: DataHolder):
     return True
 
 # Inserts a new game on the games data / csv
-def publish_game(name: str, description: str, price: float, user_data: dict, data_holder: DataHolder):
+def publish_game(name: str, description: str, price: float, genres: list[str], user_data: dict, data_holder: DataHolder):
     # Add new game to the database
     game_id = random.randrange(0, 65535)
     #game_info["id"] = game_id
@@ -24,7 +24,9 @@ def publish_game(name: str, description: str, price: float, user_data: dict, dat
         "description": description,
         "developer": user_data["id"],
         "publisher": user_data["id"],
-        "price": price
+        "price": price,
+        "genres": genres
+
     }
     data_holder.games_data[game_id] = game_info
     CsvReader.append_data(game_info, data_holder.gamedata_path)
