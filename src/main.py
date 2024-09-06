@@ -176,6 +176,8 @@ def remember_account(username, password):
         current_session.update_last_logged(-1)
 
 
+# Game menu
+
 def show_games_page(current_page: int, games: list, max_game_per_page: int, last_page: int):
     menu_lines = []
 
@@ -257,8 +259,10 @@ def new_game_catalog_menu():
     current_page: int = 0
 
     games_data = CsvReader.load_csv(data_holder.gamedata_path, ["id", "name", "description", "price", "developer_id"])
+
     using_games_data = games_data
-    
+    genre_filters = []
+
     max_game_per_page = 3
     search_threshold = 0.3
     last_page = round(len(games_data)/max_game_per_page)
@@ -272,6 +276,9 @@ def new_game_catalog_menu():
             "name": "Search games"
         },
         {
+            "name": "Change filters"
+        },
+        {
             "name": "Buy game"
         }
     ]
@@ -283,9 +290,10 @@ def new_game_catalog_menu():
         match selected:
             case 0:
                 break
+            
             case 1:
                 current_page = select_page(last_page)
-                
+            
             case 2:
                 PrintFramework.custom_print("Type the name of the game you want to search: ", Colors.HEADER)
                 PrintFramework.custom_print("You can leave it empty to see all games", Colors.WARNING)
@@ -313,9 +321,37 @@ def new_game_catalog_menu():
                                         "price": data_holder.games_data[gameId]["price"],
                                         "developer_id": data_holder.games_data[gameId]["developer_id"]
                                         })
-                
-                     
+     
             case 3:
+                PrintFramework.custom_print("Current genre filters: ", Colors.HEADER)
+                PrintFramework.custom_print(genre_filters, Colors.CYAN)
+
+                option = MenuManager.option_menu([{"name": "Add genres"}], "Remove genres", " ")
+                match option:
+                    case 1:
+                        PrintFramework.custom_print("Type a genre name:", Colors.HEADER)
+                        new_filter = input()
+
+                        genre_filters.append(new_filter)
+                        PrintFramework(f"'{new_filter}' was added to genre filters", Colors.CYAN)
+
+                    case 0:
+                        if len(genre_filters) <= 0:
+                            PrintFramework.custom_print("You don't have any filter", Colors.WARNING)
+                            break
+
+                        PrintFramework.custom_print("Type the genre number to remove it:", Colors.HEADER)
+                        
+                        genres = []
+                        for genre in genre_filters:
+                            genres.append({"name": genre})
+                        
+                        genre_idx = MenuManager.option_menu(genres, "Quit", " ")
+                        PrintFramework.custom_print(f"Removed {genre_filters[genre_idx - len(genre_filters)]} from filtered genres", Colors.CYAN)
+
+                        genre_filters.pop(genre_idx - len(genre_filters))
+
+            case 4:
                 PrintFramework.custom_print("Type the ID of the game you want to buy: ", Colors.HEADER)
                 #account_data = current_session.user_data
                 game_id = -1
@@ -347,7 +383,7 @@ def new_game_catalog_menu():
                 
                 if GameInteractions.purchase_game(game_id, current_session.user_data, data_holder):
                     PrintFramework.custom_print(f"You now own {data_holder.games_data[game_id]["name"]}!", Colors.GREEN)
-                
+
 
 
 def library_menu():

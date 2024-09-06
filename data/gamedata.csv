@@ -1,6 +1,6 @@
-id,name,description,developer_id,publisher_id,price
-0,'Sekiro','Cool game about samurai',-1,-1,100.0
-1,'Muck','Survival game I think',-1,-1, 0.0
-18131,'Pokka's Restaurant','An adventure platformer where you play as Pokka. In this game you can go to various worlds to get ingredients to cook new recipes for your restaurant',54856,54856,30.0
-16006,'Bad! Shapes','A very skill based bullet hell game where you can create your own characters using primal shapes and also create your own weapons to fight your opponents',54856,54856,30.0
-10281,'Endless Dish','Do you like washing dishes? Yes? In this game you will wash many dishes. Someone is putting another dish in the sink? You can simply break it so you don't have to wash!',54856,54856,25.99
+id,name,description,developer_id,publisher_id,price,genre
+0,'Sekiro','Cool game about samurai',-1,-1,100.0,['souls like']
+1,'Muck','Survival game I think',-1,-1, 0.0,['survival'; 'multiplayer']
+18131,'Pokka's Restaurant','An adventure platformer where you play as Pokka. In this game you can go to various worlds to get ingredients to cook new recipes for your restaurant',54856,54856,30.0,['adventure'; 'open world']
+16006,'Bad! Shapes','A very skill based bullet hell game where you can create your own characters using primal shapes and also create your own weapons to fight your opponents',54856,54856,30.0,['fight'; 'bullet hell']
+10281,'Endless Dish','Do you like washing dishes? Yes? In this game you will wash many dishes. Someone is putting another dish in the sink? You can simply break it so you don't have to wash!',54856,54856,25.99,['single player']
