@@ -617,10 +617,10 @@ def publish_game_menu():
 
     PrintFramework.custom_print("What genres your game is part off? (Split by ,)", Colors.CYAN)
     genres = input().split(",")
+    
     formatted_genres = []
     for genre in genres:
-        genre = genre.removeprefix(" ").removesuffix(" ")
-        formatted_genres.append(genre)
+        formatted_genres.append(genre.removeprefix(" ").removesuffix(" "))
 
     GameInteractions.publish_game(game_name, game_description, price, formatted_genres, current_session.user_data, data_holder)
 

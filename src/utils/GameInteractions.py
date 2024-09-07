@@ -30,6 +30,11 @@ def publish_game(name: str, description: str, price: float, genres: list[str], u
     }
     data_holder.games_data[game_id] = game_info
     CsvReader.append_data(game_info, data_holder.gamedata_path)
+    devs_data = CsvReader.load_csv(data_holder.devdata_path, [], True)
+    devs_data[user_data["id"]]["published_games"].append(game_id)
+
+    CsvReader.overwrite_data(devs_data, data_holder.devdata_path)
+
 
 
 def check_bought(game_id, user_data: dict):

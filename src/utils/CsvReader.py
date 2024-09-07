@@ -50,8 +50,9 @@ def load_csv(csv_path: str, columns: list[str]=[], use_main_key=False):
     values = {}
     main_keyIdx = 0
     if use_main_key:
-        if len(target_columns) > 1:
+        if len(target_columns) > 1 and len(columns) > 0:
             main_keyIdx = header.index(columns[0])
+    
     else:
         values = []
 

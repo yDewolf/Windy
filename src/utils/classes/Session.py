@@ -84,7 +84,8 @@ class Session:
         return False
 
     def session_signout(self):
-        self.logged_accounts.pop(self.user_data["username"])
+        if self.logged_accounts.get(self.user_data["username"]):
+            self.logged_accounts.pop(self.user_data["username"])
         CsvReader.overwrite_data(self.logged_accounts, self.config["accounts_path"])
 
         self.user_data = {}

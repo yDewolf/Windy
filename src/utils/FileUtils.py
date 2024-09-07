@@ -30,7 +30,14 @@ def convert_to_str(value):
         return "'" + value + "'"
 
     elif type(value) == list:
-        return str(value).replace(",", ";")
+        sections = str(value).split(",")
+        string = ""
+        for idx, section in enumerate(sections):
+            string += section.removeprefix(" ").removesuffix(" ")
+            if idx < len(sections) - 1:
+                string += ";"
+
+        return string
 
     return str(value)
 
